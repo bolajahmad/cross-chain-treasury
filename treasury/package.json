@@ -1,0 +1,19 @@
+{
+  "name": "treasury",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@parity/hardhat-polkadot": "^0.2.4"
+  },
+  "dependencies": {
+    "@polytope-labs/solidity-merkle-trees": "^0.3.4"
+  }
+}
