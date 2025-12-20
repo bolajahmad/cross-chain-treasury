@@ -13,6 +13,27 @@
 // limitations under the License.
 pragma solidity ^0.8.17;
 
+/**
+ * #[derive(scale::Encode, scale::Decode)]
+pub enum TreasuryAction {
+    Payout { recipient: AccountId, amount: Balance, token: u32 },
+    BatchPayout { payments: Vec<Payout> },
+    StreamStart { recipient: AccountId, amount: Balance, duration: u64, cliff: u64 },
+    StreamStop { stream_id: u32 },
+
+    CreateBounty { id: u32, reward: Balance, metadata: Vec<u8> },
+    ApproveBounty { id: u32, recipient: AccountId },
+
+    SweepToStrategy { strategy_id: u32, amount: Balance },
+    Rebalance { allocations: Vec<(u32, Balance)> },
+
+    SetBudget { amount: Balance },
+    Pause,
+    Resume,
+    EmergencyWithdraw { to: AccountId },
+}
+
+ */
 /* Treasury actions are defined using an actionID and the SCALE-encoded data */
 // Actions are listed below
 // PAYOUT = 0x01 (Payout to a specified address) (address,uint256,uint32)
@@ -22,6 +43,33 @@ pragma solidity ^0.8.17;
 struct TreasuryAction {
     uint8 id;
     bytes data;
+}
+
+struct Payout {
+    address recipient;
+    uint256 amount;
+}
+
+enum ActionType {
+    PAYOUT,
+    BATCH_PAYOUT,
+    STREAM_START,
+    STREAM_STOP
+}
+
+enum ActionStatus {
+    PENDING,
+    EXECUTED,
+    PAUSED,
+    FAILED
+}
+
+struct ActionRecord {
+    ActionStatus status;
+    ActionType actionType;
+    bool exists;
+    uint256 executedAt;
+    bytes dataHash;
 }
 
 /* Define the TreasuryController interface */

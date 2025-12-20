@@ -13,6 +13,7 @@
     "viem": "^2.41.2"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0"
+    "@openzeppelin/contracts": "^5.4.0",
+    "@polytope-labs/solidity-merkle-trees": "^0.3.4"
   }
 }
