@@ -14,9 +14,17 @@ import { Plus, Vote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProposerRegistrationCard } from "./components/proposer-registration-card";
 import { ProposalListCard } from "./components/proposal-list";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 export default function ActionsPage() {
-  const actions = [] as unknown[];
+  const { data } = useQuery({
+    queryKey: ["actions-statistics"],
+    queryFn: () => fetch("/api/treasury").then((res) => res.json()),
+  });
+  console.log({ data });
+
+  const actions = [] as any[];
 
   return (
     <div className="h-full mx-auto px-4 pb-16 max-w-7xl">
@@ -41,11 +49,23 @@ export default function ActionsPage() {
           <div>
             {/* The page header and title text */}
             <div>
-              <div>
-                <h1>Treasury Actions</h1>
-                <h2 className="mt-3">
+              <div className="py-8">
+                <div className="flex items-center justify-between mb-2">
+                  <h1 className="text-4xl font-bold">Treasury Actions</h1>
+
+                  <Link href="/actions/create">
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                    >
+                      <Plus />
+                      Create Proposal
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-muted-foreground">
                   Review and manage all recent treasury actions
-                </h2>
+                </p>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { cookieStorage, createConfig, createStorage, http, injected } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
 
-const passetHub = {
+export const passetHub = {
   id: 420_420_422,
   name: 'PassetHub',
   network: 'Polkadot Hub Testnet',
@@ -17,7 +17,7 @@ const passetHub = {
   },
 } as const;
 
-const assetHub = {
+export const assetHub = {
   id: 420_420_421,
   name: 'AssetHub',
   network: 'Polkadot Asset Hub',

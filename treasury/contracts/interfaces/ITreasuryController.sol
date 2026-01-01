@@ -16,7 +16,7 @@ pragma solidity ^0.8.17;
 /**
  * #[derive(scale::Encode, scale::Decode)]
 pub enum TreasuryAction {
-    Payout { recipient: AccountId, amount: Balance, token: u32 },
+    Payout { recipient: AccountId, amount: Balance, token: u32, metadata: string},
     BatchPayout { payments: Vec<Payout> },
     StreamStart { recipient: AccountId, amount: Balance, duration: u64, cliff: u64 },
     StreamStop { stream_id: u32 },

@@ -1,0 +1,27 @@
+const hre = require("hardhat");
+
+async function main() {
+    const Treasury = await hre.ethers.getContractFactory("Treasury");
+    const contractAddress = "0xD85FD2D14b62208F3A8D9500Aa723e72Db9f5375";
+    const xcmContract = Treasury.attach(contractAddress);
+
+    const actionId = "0xc7cffa1da6c65b34157564df2f9d9aea1b2490e943a39cbb83c51d688886a27b";
+    const type = 1;
+    const params = "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000009281e0888a4b6e7360f739be740c0e696c3ced2c000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003b6261666b72656968767a7a65676c6e766769356b356d346e67677476626773676375686c6d64626f32797472326765767675757a6b6e68646232340000000000";
+
+    
+    const tx = await xcmContract.createAction(
+       actionId,
+       type,
+       params
+    );
+    const receipt = await tx.wait();
+    console.log({ receipt });
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

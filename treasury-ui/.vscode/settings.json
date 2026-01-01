@@ -1,0 +1,13 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.removeUnused.ts": "always",
+        "source.removeUnusedImports": "always",
+        "source.fixAll.eslint": "always",
+        "source.fixAll.ts": "always",
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "editor.aiStats.enabled": true,
+    "editor.rulers": [100]
+}

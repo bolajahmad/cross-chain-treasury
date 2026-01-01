@@ -35,7 +35,6 @@ contract Treasury is Ownable {
         onlyUniqueId(_id) // Verify that the _id is unique
         onlyValidType(_type) // Type must be greater than 0 & less than maxActions$
     {
-        require(msg.sender == controller, "Only Controller");
         ActionRecord memory record = ActionRecord({
             status: ActionStatus.PENDING,
             actionType: ActionType(_type - 1),
@@ -121,5 +120,13 @@ contract Treasury is Ownable {
         } else {
             revert("Invalid Action Type");
         }
+    }
+
+    function generateActionId() public view returns (bytes32) {
+        return keccak256(abi.encodePacked(block.timestamp, msg.sender, actionCount));
+    }
+
+    function maxActions() public view returns (uint256) {
+        return maxActions$;
     }
 }
