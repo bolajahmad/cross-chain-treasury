@@ -13,6 +13,13 @@ export enum ProposalType {
   STREAM_STOP = "STREAM_STOP",
 }
 
+export enum ActionStatus {
+  PENDING,
+  EXECUTED,
+  PAUSED,
+  FAILED
+}
+
 export const ProposalTypes = [
   {
     id: ProposalType.PAYOUT,

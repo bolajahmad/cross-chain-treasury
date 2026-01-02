@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
 import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
+import { ProposalTypes } from "@/lib/models/actions";
 import { PaginatedResponse } from "@/lib/models/api";
 import { passetHub } from "@/lib/wallet/wagmi-config";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -45,7 +46,14 @@ export default async function handler(
 
   const actions = [];
   const data = await contract.read.actions(["0xca99f86632e4d9f1f3987bfa130bcd14ef36bcdb2e45b9c4381ce63461f6572a"]);
-  actions.push(data)
+  const act = {
+    status: ProposalTypes[data[0]],
+    actionType: data[1],
+    isExisting: data[2],
+    executedAt: data[3].toString(),
+    params: data[4]
+  }
+  actions.push(act)
 
   console.log("Fetched actions: ", actions);
   res.status(200).json({ 

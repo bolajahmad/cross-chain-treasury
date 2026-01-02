@@ -1,0 +1,17 @@
+type ActionCreated @entity {
+  id: ID!
+  actionType: Int!
+  index: Int!
+  params: Bytes!
+  block: Int!
+  txnHash: String! @index
+}
+
+type TreasuryExecution @entity {
+  id: ID!
+  actionType: Int!
+  amount: BigInt!
+  params: Bytes!
+  block: Int!
+  txnHash: String! @index
+}
