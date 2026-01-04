@@ -40,5 +40,17 @@ export default defineConfig({
       url: "https://gateway.tenderly.co/public/sepolia",
       accounts: [configVariable("PRIVATE_KEY")],
     },
+    baseSepolia: {
+      type: "http",
+      chainType: "l1",
+      url: "https://base-sepolia.gateway.tenderly.co",
+      accounts: [configVariable("PRIVATE_KEY")],
+    },
+    amoy: {
+      type: "http",
+      chainType: "l1",
+      url: "https://polygon-amoy.api.onfinality.io/public",
+      accounts: [configVariable("PRIVATE_KEY")],
+    }
   },
 });

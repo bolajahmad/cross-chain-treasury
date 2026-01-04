@@ -13,42 +13,7 @@
 // limitations under the License.
 pragma solidity ^0.8.17;
 
-
-// Various frozen states of the IIsmpHost
-enum FrozenStatus {
-	// Host is operating normally
-	None,
-	// Host is currently disallowing incoming datagrams
-	Incoming,
-	// Host is currently disallowing outgoing messages
-	Outgoing,
-	// All actions have been frozen
-	All
-}
-
-struct PostRequest {
-	// the source state machine of this request
-	bytes source;
-	// the destination state machine of this request
-	bytes dest;
-	// request nonce
-	uint64 nonce;
-	// Module Id of this request origin
-	bytes from;
-	// destination module id
-	bytes to;
-	// timestamp by which this request times out.
-	uint64 timeoutTimestamp;
-	// request body
-	bytes body;
-}
-
-struct StateMachineHeight {
-	// the state machine identifier
-	uint256 stateMachineId;
-	// height of this state machine
-	uint256 height;
-}
+import {PostRequest, StateMachineHeight, FrozenStatus} from "./Message.sol";
 
 // @notice An object for dispatching post requests to the Hyperbridge
 struct DispatchPost {

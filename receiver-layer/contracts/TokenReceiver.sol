@@ -15,6 +15,7 @@ contract TokenReceiver {
     IERC20 public immutable mnee;
 
     mapping(address => uint256) public deposits;
+    uint256 public totalDeposits;
 
     event DepositIntent(address indexed from, uint256 amount, address destination, bytes action);
 
@@ -24,28 +25,37 @@ contract TokenReceiver {
 
     /**
     * @notice Deposit MNEE tokens to be bridged to Polkadot
-    * @param polkadotAccount The destination Polkadot account (the H160 format)
+    * @param receiverAccount The destination Polkadot account (the H160 format)
     * @param amount The amount of MNEE deposit paid
      */
-    function deposit(address polkadotAccount, uint256 amount, bytes calldata action) payable external {
-        require(mnee.transferFrom(msg.sender, address(this), amount), "transfer failed");
+    function deposit(address receiverAccount, uint256 amount, bytes calldata action) payable external {
+        // require(mnee.transferFrom(msg.sender, address(this), amount), "transfer failed");
 
         // increase deposit of the msg.sender
         deposits[msg.sender] += amount;
+        totalDeposits += 1;
 
         // construct the message to dispatch
         DispatchPost memory post = DispatchPost({
             body: action,
-            dest: StateMachine.polkadot(1000),
+            dest: StateMachine.evm(80002),
             timeout: uint64(block.timestamp + 1 hours),
-            to: abi.encodePacked(polkadotAccount),
+            to: abi.encodePacked(receiverAccount),
             fee: amount * 1 / 1000,  // e.g., 0.1% fee
             payer: tx.origin
         });
-        bytes32 commitment = IDispatcher(MESSENGER_HOST).dispatch{value: msg.value}(post);
+        bytes32 commitment = IDispatcher(MESSENGER_HOST).dispatch(post);
+        
+        try IDispatcher(MESSENGER_HOST).dispatch(post) returns (bytes32 commitment) {
+            emit DepositIntent(msg.sender, amount, receiverAccount, action);
+        } catch Error(string memory reason) {
+            revert(string.concat("DISPATCH_FAILED: ", reason));
+        } catch {
+            revert("DISPATCH_FAILED: low-level revert");
+        }
 
         // Optionally escrow locally until bridge confirms
-        emit DepositIntent(msg.sender, amount, polkadotAccount, action);
+        
         // call bridge messenger to send ISMP message 
     }
 }
