@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./interfaces/IIsmpModule.sol";
+import {HyperApp} from "@hyperbridge/core/contracts/apps/HyperApp.sol";
+import "@hyperbridge/core/contracts/interfaces/IApp.sol";
 import "./interfaces/ITreasuryController.sol";
 
-contract TreasuryController is BaseIsmpModule {
+contract TreasuryController is HyperApp {
     event PostReceived();
 
     // IIsmpHost Address
