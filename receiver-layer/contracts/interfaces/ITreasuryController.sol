@@ -72,7 +72,19 @@ struct ActionRecord {
     bytes dataHash;
 }
 
+interface ITreasury {
+    function createAction(
+        bytes32 _id,
+        uint8 _type,
+        bytes calldata _params
+    ) external;
+
+    function executeTreasuryAction(bytes32 _id) external;
+
+    function maxActions() external view returns (uint8);
+}
+
 /* Define the TreasuryController interface */
 // interface ITreasuryController {
-    
+
 // }
