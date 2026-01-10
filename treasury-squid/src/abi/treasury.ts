@@ -11,7 +11,6 @@ export const events = {
 export const functions = {
     actionCount: viewFun("0x29da5738", "actionCount()", {}, p.uint256),
     actions: viewFun("0xf3abde32", "actions(bytes32)", {"_0": p.bytes32}, {"status": p.uint8, "actionType": p.uint8, "exists": p.bool, "executedAt": p.uint256, "dataHash": p.bytes}),
-    controller: viewFun("0xf77c4791", "controller()", {}, p.address),
     createAction: fun("0x7cca43a9", "createAction(bytes32,uint8,bytes)", {"_id": p.bytes32, "_type": p.uint8, "_params": p.bytes}, ),
     executeTreasuryAction: fun("0x84de3c55", "executeTreasuryAction(bytes32)", {"_id": p.bytes32}, ),
     generateActionId: viewFun("0xc230f812", "generateActionId()", {}, p.bytes32),
@@ -29,10 +28,6 @@ export class Contract extends ContractBase {
 
     actions(_0: ActionsParams["_0"]) {
         return this.eth_call(functions.actions, {_0})
-    }
-
-    controller() {
-        return this.eth_call(functions.controller, {})
     }
 
     generateActionId() {
@@ -59,9 +54,6 @@ export type ActionCountReturn = FunctionReturn<typeof functions.actionCount>
 
 export type ActionsParams = FunctionArguments<typeof functions.actions>
 export type ActionsReturn = FunctionReturn<typeof functions.actions>
-
-export type ControllerParams = FunctionArguments<typeof functions.controller>
-export type ControllerReturn = FunctionReturn<typeof functions.controller>
 
 export type CreateActionParams = FunctionArguments<typeof functions.createAction>
 export type CreateActionReturn = FunctionReturn<typeof functions.createAction>

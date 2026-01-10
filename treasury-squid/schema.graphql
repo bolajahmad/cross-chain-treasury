@@ -1,17 +1,23 @@
-type ActionCreated @entity {
+type Transfer @entity {
   id: ID!
-  actionType: Int!
-  index: Int!
-  params: Bytes!
-  block: Int!
-  txnHash: String! @index
+  network: String! @index
+  block: Int! @index
+  timestamp: DateTime! @index
+  from: String! @index
+  to: String! @index
+  value: BigInt!
+  txHash: String! @index
 }
 
-type TreasuryExecution @entity {
+type Action @entity {
   id: ID!
+  network: String! @index
+  block: Int! @index
+  timestamp: DateTime! @index
+  actionId: String! @index
   actionType: Int!
-  amount: BigInt!
-  params: Bytes!
-  block: Int!
-  txnHash: String! @index
+  params: String!
+  value: BigInt!
+  status: String!
+  txHash: String! @index
 }

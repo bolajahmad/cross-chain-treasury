@@ -1,5 +1,5 @@
 import { cookieStorage, createConfig, createStorage, http, injected } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
+import { base, baseSepolia, mainnet, sepolia } from 'wagmi/chains'
 
 export const passetHub = {
   id: 420_420_422,
@@ -45,7 +45,7 @@ export const assetHub = {
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, sepolia, assetHub, passetHub],
+    chains: [mainnet, sepolia, baseSepolia, base],
     storage: createStorage({
       storage: cookieStorage,
     }),
@@ -54,8 +54,8 @@ export function getConfig() {
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
-      [assetHub.id]: http(),
-      [passetHub.id]: http(),
+      [base.id]: http(),
+      [baseSepolia.id]: http(),
     },
   })
 }

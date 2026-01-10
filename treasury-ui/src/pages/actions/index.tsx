@@ -22,9 +22,7 @@ export default function ActionsPage() {
     queryKey: ["actions-statistics"],
     queryFn: () => fetch("/api/treasury").then((res) => res.json()),
   });
-  console.log({ data });
-
-  const actions = [] as any[];
+  
 
   return (
     <div className="h-full mx-auto px-4 pb-16 max-w-7xl">
@@ -113,58 +111,9 @@ export default function ActionsPage() {
         <div>
           <Separator className="my-4" />
 
-          <Card className="bg-gray-200/70 dark:bg-white/5 border-none shadow-none">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-medium flex items-center gap-2">
-                  <Vote className="w-6 h-6" />
-                  All Proposals
-                </CardTitle>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Browse and vote on governance proposals
-              </p>
-            </CardHeader>
-            <CardContent>
-              {false ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <Card
-                      key={i}
-                      className="bg-gray-200/70 dark:bg-white/5 border-none shadow-none"
-                    >
-                      <CardHeader>
-                        <Skeleton className="h-6 w-full" />
-                        <Skeleton className="h-4 w-32" />
-                      </CardHeader>
-                      <CardContent>
-                        <Skeleton className="h-20 w-full" />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : actions && actions.length > 0 ? (
-                <div className="text-center py-16">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-                    <Vote className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">
-                    No Proposals Yet
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
-                    Be the first to create a governance proposal and shape the
-                    future of this treasury!
-                  </p>
-                  <Button size="lg">
-                    <Plus className="w-5 h-5" />
-                    Create First Proposal
-                  </Button>
-                </div>
-              ) : (
-                <ProposalListCard />
-              )}
-            </CardContent>
-          </Card>
+          <div>
+            <ProposalListCard />
+          </div>
         </div>
       </div>
     </div>

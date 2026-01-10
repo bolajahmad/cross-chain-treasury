@@ -1,6 +1,25 @@
+import { useChains, useConnection, useSwitchChain } from "wagmi";
 import { Button } from "../ui/button";
+import { Chain } from "viem";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import Image from "next/image";
+import { Loader2Icon } from "lucide-react";
 
 export function Footer() {
+  const { chain } = useConnection();
+  const chains = useChains();
+  const switchChain = useSwitchChain();
+
+  console.log({ chain, chains });
+  const updateChain = (id: 1 | 11155111 | 8453 | 84532) => {
+    switchChain.mutate({ chainId: id });
+  };
   return (
     <div className="border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-5xl px-4 mx-auto flex justify-between items-center gap-4 py-4">
@@ -42,7 +61,40 @@ export function Footer() {
             </svg>
           </a>
         </div>
-        <Button>Change Network</Button>
+        <div>
+          <Select
+            value={`${chain?.id || ""}`}
+            onValueChange={(id) =>
+              updateChain(Number(id) as 1 | 11155111 | 8453 | 84532)
+            }
+          >
+            <SelectTrigger className="w-fit min-w-[120px] bg-white">
+              <SelectValue>
+                <div className="flex items-center gap-2">
+                  <span className="hidden sm:inline">
+                    {chain?.name || "Select chain"}
+                  </span>
+                  <div className="ml-2">
+                    {true ? (
+                      <div className="w-3 h-3 bg-green-500 rounded-full" />
+                    ) : (
+                      <Loader2Icon className="w-3 h-3 animate-spin" />
+                    )}
+                  </div>
+                </div>
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {chains.map((one) => (
+                <SelectItem key={one.id} value={one.id.toString()}>
+                  <div className="flex items-center gap-2">
+                    <span>{one.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

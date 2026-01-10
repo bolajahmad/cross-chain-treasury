@@ -1,249 +1,407 @@
 export const TreasuryContractABI = [
   {
-    inputs: [
+    "type": "constructor",
+    "name": "",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "",
+    "inputs": [
       {
-        internalType: "uint256",
-        name: "_maxActions",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "_controller",
-        type: "address",
-      },
+        "name": "_maxActions",
+        "type": "uint256",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      }
     ],
-    stateMutability: "nonpayable",
-    type: "constructor",
+    "outputs": null
   },
   {
-    inputs: [
+    "type": "function",
+    "name": "actionCount",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
       {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "OwnableInvalidOwner",
-    type: "error",
+        "name": "",
+        "type": "uint256",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      }
+    ]
   },
   {
-    inputs: [
+    "type": "function",
+    "name": "actions",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "view",
+    "inputs": [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+        "name": "",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
     ],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
+    "outputs": [
+      {
+        "name": "status",
+        "type": "uint8",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "actionType",
+        "type": "uint8",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "exists",
+        "type": "bool",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bool"
+        }
+      },
+      {
+        "name": "executedAt",
+        "type": "uint256",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "dataHash",
+        "type": "bytes",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
+    ]
   },
   {
-    anonymous: false,
-    inputs: [
+    "type": "function",
+    "name": "maxActions",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
       {
-        indexed: true,
-        internalType: "bytes32",
-        name: "id",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "enum ActionType",
-        name: "actionType",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "bytes",
-        name: "params",
-        type: "bytes",
-      },
-    ],
-    name: "ActionCreated",
-    type: "event",
+        "name": "",
+        "type": "uint256",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      }
+    ]
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
-    type: "event",
+    "type": "function",
+    "name": "renounceOwnership",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "nonpayable",
+    "inputs": [],
+    "outputs": []
   },
   {
-    anonymous: false,
-    inputs: [
+    "type": "function",
+    "name": "createAction",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "nonpayable",
+    "inputs": [
       {
-        indexed: true,
-        internalType: "bytes32",
-        name: "id",
-        type: "bytes32",
+        "name": "_id",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
       },
       {
-        indexed: false,
-        internalType: "enum ActionType",
-        name: "actionType",
-        type: "uint8",
+        "name": "_type",
+        "type": "uint8",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "bytes",
-        name: "params",
-        type: "bytes",
-      },
+        "name": "_params",
+        "type": "bytes",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
     ],
-    name: "TreasuryExecution",
-    type: "event",
+    "outputs": []
   },
   {
-    inputs: [],
-    name: "actionCount",
-    outputs: [
+    "type": "function",
+    "name": "owner",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+        "name": "",
+        "type": "address",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "address"
+        }
+      }
+    ]
   },
   {
-    inputs: [
+    "type": "function",
+    "name": "executeTreasuryAction",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "nonpayable",
+    "inputs": [
       {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
+        "name": "_id",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
     ],
-    name: "actions",
-    outputs: [
-      {
-        internalType: "enum ActionStatus",
-        name: "status",
-        type: "uint8",
-      },
-      {
-        internalType: "enum ActionType",
-        name: "actionType",
-        type: "uint8",
-      },
-      {
-        internalType: "bool",
-        name: "exists",
-        type: "bool",
-      },
-      {
-        internalType: "uint256",
-        name: "executedAt",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "dataHash",
-        type: "bytes",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    "outputs": []
   },
   {
-    inputs: [],
-    name: "controller",
-    outputs: [
+    "type": "function",
+    "name": "generateActionId",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+        "name": "",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
+    ]
   },
   {
-    inputs: [
+    "type": "function",
+    "name": "transferOwnership",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "nonpayable",
+    "inputs": [
       {
-        internalType: "bytes32",
-        name: "_id",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint8",
-        name: "_type",
-        type: "uint8",
-      },
-      {
-        internalType: "bytes",
-        name: "_params",
-        type: "bytes",
-      },
+        "name": "newOwner",
+        "type": "address",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "address"
+        }
+      }
     ],
-    name: "createAction",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "outputs": []
   },
   {
-    inputs: [
+    "type": "event",
+    "name": "ActionCreated",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "",
+    "inputs": [
       {
-        internalType: "bytes32",
-        name: "_id",
-        type: "bytes32",
+        "name": "id",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": true,
+        "simple_type": {
+          "type": "bytes"
+        }
       },
+      {
+        "name": "actionType",
+        "type": "uint8",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "params",
+        "type": "bytes",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
     ],
-    name: "executeTreasuryAction",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "outputs": null
   },
   {
-    inputs: [],
-    name: "owner",
-    outputs: [
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "",
+    "inputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
+        "name": "previousOwner",
+        "type": "address",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": true,
+        "simple_type": {
+          "type": "address"
+        }
       },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": true,
+        "simple_type": {
+          "type": "address"
+        }
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "outputs": null
   },
   {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
+    "type": "event",
+    "name": "TreasuryExecution",
+    "constant": false,
+    "anonymous": false,
+    "stateMutability": "",
+    "inputs": [
       {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
+        "name": "id",
+        "type": "bytes32",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": true,
+        "simple_type": {
+          "type": "bytes"
+        }
       },
+      {
+        "name": "actionType",
+        "type": "uint8",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "uint"
+        }
+      },
+      {
+        "name": "params",
+        "type": "bytes",
+        "storage_location": "default",
+        "offset": 0,
+        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "indexed": false,
+        "simple_type": {
+          "type": "bytes"
+        }
+      }
     ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
+    "outputs": null
+  }
 ] as const;

@@ -6,6 +6,7 @@ import { PaginatedResponse } from "@/lib/models/api";
 import { passetHub } from "@/lib/wallet/wagmi-config";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createPublicClient, formatUnits, getContract, http } from "viem";
+import { baseSepolia } from "viem/chains";
 
 type Data = PaginatedResponse<any>;
 
@@ -17,8 +18,8 @@ export default async function handler(
   
   // setup the smart contract of the treasury using viem
   const publicClient = createPublicClient({
-    chain: passetHub,
-    transport: http(),
+    chain: baseSepolia,
+    transport: http("https://base-sepolia.gateway.tenderly.co"),
   });
   const contract = getContract({
     address: TREASURY_CONTRACT_ADDRESS,
@@ -45,19 +46,9 @@ export default async function handler(
   }
 
   const actions = [];
-  const data = await contract.read.actions(["0xca99f86632e4d9f1f3987bfa130bcd14ef36bcdb2e45b9c4381ce63461f6572a"]);
-  const act = {
-    status: ProposalTypes[data[0]],
-    actionType: data[1],
-    isExisting: data[2],
-    executedAt: data[3].toString(),
-    params: data[4]
-  }
-  actions.push(act)
 
-  console.log("Fetched actions: ", actions);
   res.status(200).json({ 
-    data: actions,
+    data: [],
     meta: {
       total: Number(actionCount),
       hasNext: page < totalPages,

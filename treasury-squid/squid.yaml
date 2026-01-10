@@ -1,17 +1,23 @@
 manifestVersion: subsquid.io/v0.1
 name: treasury-squid
 version: 1
-description: The very first evm squid from manifest
+description: A squid that indexes USDC transfers on ETH and BSC
 build: 
 deploy:
   addons:
     postgres: 
     rpc:
       - eth.http
+      - bsc.http
   processor:
-    cmd:
-      - sqd
-      - process:prod
+    - name: eth-processor
+      cmd:
+        - sqd
+        - process:prod:eth
+    - name: bsc-processor
+      cmd:
+        - sqd
+        - process:prod:bsc
   api:
     cmd:
       - sqd

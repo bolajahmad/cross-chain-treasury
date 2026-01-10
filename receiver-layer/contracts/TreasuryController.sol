@@ -28,7 +28,7 @@ contract TreasuryController is HyperApp {
     {
         // decode the received action
         (uint8 _actionType, uint256 _amount, bytes memory _action) = abi.decode(incoming.request.body, (uint8, uint256, bytes));
-        (address _recipient, uint256 value, address _token, bytes memory _metadata) = abi.decode(_action, (address, uint8, address, bytes));
+        (address _recipient, uint256 value, address _token, bytes memory _metadata) = abi.decode(_action, (address, uint256, address, bytes));
         // decode request body
         bytes32 actionId = sha256(_metadata);
         // make any necessary state changes

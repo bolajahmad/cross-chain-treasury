@@ -36,6 +36,7 @@ import { useWriteContract } from "wagmi";
 import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
 import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
 import { useCreateTreasuryActions } from "@/lib/hooks/use-execute-treasury-action";
+import { parseUnits } from "viem";
 
 export type Inputs = {
   title: string;
@@ -90,7 +91,7 @@ export default function CreateActionsPage() {
           type: values.type
         }, {
           recipient: values.recipient as `0x${string}`,
-          amount: BigInt(values.amount),
+          amount: parseUnits(values.amount, 18),
           token: values.recipient as `0x${string}`,
         })
       }
