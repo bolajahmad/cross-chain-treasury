@@ -34,7 +34,7 @@ contract TokenReceiver {
     * @param receiverAccount The destination Polkadot account (the H160 format)
     * @param amount The amount of MNEE deposit paid
      */
-    function deposit(address receiverAccount, uint256 amount, bytes calldata action, uint256 fee) payable external {
+    function deposit(address receiverAccount, uint256 amount, uint8 actionType, bytes calldata action, uint256 fee) payable external {
         // Escrow the deposited tokens on source chain
         require(mnee.transferFrom(msg.sender, address(this), amount), "transfer failed");
         // User pays the contract the fee
@@ -44,7 +44,7 @@ contract TokenReceiver {
         deposits[msg.sender] += amount;
         totalDeposits += amount;
         bytes memory body = abi.encode(
-            receiverAccount,
+            actionType,
             amount,
             action
         );

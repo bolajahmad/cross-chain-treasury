@@ -7,7 +7,7 @@ import "./interfaces/ITreasuryController.sol";
 import { ITreasury} from "./Treasury.sol";
 
 contract TreasuryController is HyperApp {
-    event PostReceived(address indexed recipient, bytes indexed action, uint256 amount);
+    event PostReceived(address indexed recipient, bytes32 indexed actionId, uint256 amount);
     
     // IIsmpHost Address
     address private _host;
@@ -27,13 +27,15 @@ contract TreasuryController is HyperApp {
         override
     {
         // decode the received action
-        (address _recipient, uint256 _amount, bytes memory _action) = abi.decode(incoming.request.body, (address, uint256, bytes));
-        (bytes32 _id, uint8 _type, bytes memory _data) = abi.decode(_action, (bytes32, uint8, bytes));
+        (uint8 _actionType, uint256 _amount, bytes memory _action) = abi.decode(incoming.request.body, (uint8, uint256, bytes));
+        (address _recipient, uint256 value, address _token, bytes memory _metadata) = abi.decode(_action, (address, uint8, address, bytes));
         // decode request body
+        bytes32 actionId = sha256(_metadata);
         // make any necessary state changes
-        try treasury.createAction(_id, _type, _data) {
-            emit PostReceived(_recipient, _action, _amount);
+        try treasury.createAction(actionId, _actionType, _action) {
+            emit PostReceived(incoming.relayer, actionId, _amount);
         } catch  {
+            emit PostReceived(address(this), actionId, 0);
             revert UnexpectedCall();
         }
     }

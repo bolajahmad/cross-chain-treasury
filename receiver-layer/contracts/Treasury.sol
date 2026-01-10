@@ -7,7 +7,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 contract Treasury is Ownable {
     uint256 private maxActions$;
 
-    address public controller;
+    // address public controller;
     uint256 public actionCount;
     // bytes32 represents the actionID
     mapping(bytes32 => ActionRecord) public actions;
@@ -25,9 +25,9 @@ contract Treasury is Ownable {
     event ActionCreated(bytes32 indexed id, ActionType actionType, bytes params);
     event TreasuryExecution(bytes32 indexed id, ActionType actionType,uint256 amount, bytes params);
 
-    constructor(uint256 _maxActions, address _controller) Ownable(msg.sender) {
+    constructor(uint256 _maxActions) Ownable(msg.sender) {
         maxActions$ = _maxActions;
-        controller = _controller;
+        // controller = _controller;
     }
 
     function createAction(bytes32 _id, uint8 _type, bytes calldata _params)
@@ -51,9 +51,7 @@ contract Treasury is Ownable {
     function executeTreasuryAction(bytes32 _id) public {
         ActionRecord memory action = actions[_id];
         require(action.exists, "Action does not exist");
-        ActionType actionType = action.actionType;
-
-        
+        ActionType actionType = action.actionType;        
 
         if (actionType == ActionType.PAYOUT) {
             (address recipient, uint256 amount, uint32 _token) = abi.decode(action.dataHash, (address, uint256, uint32));
