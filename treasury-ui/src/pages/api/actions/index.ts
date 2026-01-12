@@ -6,6 +6,7 @@ import { PaginatedResponse } from "@/lib/models/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
   createPublicClient,
+  decodeAbiParameters,
   formatUnits,
   getContract,
   hexToString,
@@ -14,7 +15,11 @@ import {
 import { baseSepolia } from "viem/chains";
 import { squidClient } from "@/lib/squid-client";
 import { ACTIONS_QUERY } from "@/lib/queries/actions";
-import { decodePayoutActionParameters } from "@/lib/abi-codec";
+import {
+  decodeBatchPayoutActionParameters,
+  decodePayoutActionParameters,
+  decodeStreamStartActionParameters,
+} from "@/lib/abi-codec";
 import { fetchIpfsJson } from "@/lib/queries/fetch-ipfs-data";
 
 type Data = PaginatedResponse<any>;
@@ -65,22 +70,15 @@ export default async function handler(
   );
 
   // decode the encoded params to fetch actual data and convert the actionType to relevant enum
-  const actions = await Promise.all(data.actions.map(async (act) => {
-    const { amount, metadata, recipient } = decodePayoutActionParameters(
-      act.params as `0x${string}`
-    );
-    // fetch IPFS data
-    const info = await fetchIpfsJson(hexToString(metadata));
-
-    return {
-      ...act,
-      actionType: ProposalTypes[act.actionType],
-      totalAmount: formatUnits(amount, 18),
-      recipient,
-      metadataHash: metadata,
-      metadata: info,
-    };
-  }));
+  const actions = await Promise.all(
+    data.actions.map(async (act) => {
+      
+      return {
+        ...act,
+        actionType: ProposalTypes[act.actionType - 1],
+      };
+    })
+  );
 
   console.log({ actions });
   res.status(200).json({

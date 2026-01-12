@@ -17,8 +17,8 @@ export const networksConfigs: Record<string, NetworkConfig> = {
       "No Base RPC endpoint supplied via env.RPC_BASE_HTTP"
     ),
     finalityConfirmation: 75,
-    startAtBlock: 36085255,
-    contract: "0xF474302a32ebaA69f230cdaF2c14Def1dEdd93FF".toLowerCase(),
+    startAtBlock: 36222660,
+    contract: "0xBCDe18F053AD8F6Ca6Fb0e7d80b051bD77350126".toLowerCase(),
     chain: "base",
   },
   eth: {
@@ -28,8 +28,8 @@ export const networksConfigs: Record<string, NetworkConfig> = {
       "No ETH RPC endpoint supplied via env.RPC_ETH_HTTP"
     ),
     finalityConfirmation: 15,
-    startAtBlock: 10003343,
-    contract: "0x4B4f204aE2D357a71B4dED68d25b2C9FD62053A3".toLowerCase(),
+    startAtBlock: 10016240,
+    contract: "0x6E152F7CDba7ecdec2406c3Cf9Fa48a24cf54D1a".toLowerCase(),
     chain: "eth",
   },
 };

@@ -8,7 +8,7 @@ export const events = {
 
 export const functions = {
     MESSENGER_HOST: viewFun("0x0bafe30d", "MESSENGER_HOST()", {}, p.address),
-    deposit: fun("0xf3125a1f", "deposit(address,uint256,bytes,uint256)", {"receiverAccount": p.address, "amount": p.uint256, "action": p.bytes, "fee": p.uint256}, ),
+    deposit: fun("0xe5c76cb9", "deposit(address,uint256,uint8,bytes,uint256)", {"receiverAccount": p.address, "amount": p.uint256, "actionType": p.uint8, "action": p.bytes, "fee": p.uint256}, ),
     deposits: viewFun("0xfc7e286d", "deposits(address)", {"_0": p.address}, p.uint256),
     feeToken: viewFun("0x647846a5", "feeToken()", {}, p.address),
     mnee: viewFun("0x79b34cce", "mnee()", {}, p.address),
