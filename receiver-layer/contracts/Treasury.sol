@@ -32,7 +32,7 @@ contract Treasury is Ownable, AccessControl {
         _;
     }
     modifier onlyValidType(uint8 _id) {
-        require(_id > 0 && _id <= maxActions$, "Invalid ID");
+        require(_id <= maxActions$, "Invalid ID");
         _;
     }
     modifier onlyController(address _addr) {
@@ -47,9 +47,7 @@ contract Treasury is Ownable, AccessControl {
     );
     event TreasuryExecution(
         bytes32 indexed id,
-        ActionType actionType,
-        uint256 amount,
-        bytes params
+        ActionType actionType
     );
 
     constructor(uint256 _maxActions) Ownable(msg.sender) {
@@ -148,16 +146,40 @@ contract Treasury is Ownable, AccessControl {
 
         if (actionType == ActionType.PAYOUT) {
             state.executePayout(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else if (actionType == ActionType.BATCH_PAYOUT) {
             state.executeBatchPayout(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else if (actionType == ActionType.STREAM_START) {
            state.executeStreamStart(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else if (actionType == ActionType.STREAM_STOP) {
             state.executeStreamStop(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else if (actionType == ActionType.PAUSE) {
             state.executePause(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else if (actionType == ActionType.RESUME) {
             state.executeResume(_id);
+            emit TreasuryExecution(
+                _id,
+                actionType
+            );
         } else {
             revert("Invalid Action Type");
         }
