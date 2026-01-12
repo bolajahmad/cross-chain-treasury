@@ -4,8 +4,9 @@ pragma solidity ^0.8.28;
 import {HyperApp} from "@hyperbridge/core/contracts/apps/HyperApp.sol";
 import "@hyperbridge/core/contracts/interfaces/IApp.sol";
 import "./interfaces/ITreasuryController.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
-contract TreasuryController is HyperApp {
+contract TreasuryController is HyperApp, Ownable {
     event PostReceived(
         address indexed recipient,
         bytes32 indexed actionId,
@@ -16,7 +17,7 @@ contract TreasuryController is HyperApp {
     address private _host;
     ITreasury public treasury;
 
-    constructor(address ismpHost, address treasuryAddress) {
+    constructor(address ismpHost, address treasuryAddress) Ownable(msg.sender) {
         _host = ismpHost;
         treasury = ITreasury(treasuryAddress);
     }
@@ -46,5 +47,9 @@ contract TreasuryController is HyperApp {
             emit PostReceived(address(this), actionId, 0);
             revert UnexpectedCall();
         }
+    }
+
+    function changeTreasury(address _treasury) external onlyOwner {
+        treasury = ITreasury(_treasury);
     }
 }

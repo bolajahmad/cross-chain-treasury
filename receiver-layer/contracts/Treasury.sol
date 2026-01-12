@@ -54,10 +54,10 @@ contract Treasury is Ownable, AccessControl {
 
     constructor(uint256 _maxActions) Ownable(msg.sender) {
         maxActions$ = _maxActions;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(CONTROLLER_ROLE, msg.sender);
         // Contract deployer shoiuld be the initial controller
         _setRoleAdmin(CONTROLLER_ROLE, DEFAULT_ADMIN_ROLE);
-        grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        grantRole(CONTROLLER_ROLE, msg.sender);
     }
 
     /**

@@ -4,8 +4,8 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 const TreasuryModule = buildModule("Treasury", (m) => {
-    const MAX_SUPPLY = 20;
-    const token = m.contract("Treasury", [MAX_SUPPLY])
+    const MAX_ACTIONS = 20;
+    const token = m.contract("Treasury", [MAX_ACTIONS])
 
     return { token }
 })
