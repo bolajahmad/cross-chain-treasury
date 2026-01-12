@@ -16,7 +16,6 @@ export function Footer() {
   const chains = useChains();
   const switchChain = useSwitchChain();
 
-  console.log({ chain, chains });
   const updateChain = (id: 1 | 11155111 | 8453 | 84532) => {
     switchChain.mutate({ chainId: id });
   };

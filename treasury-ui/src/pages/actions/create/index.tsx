@@ -37,6 +37,8 @@ import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi"
 import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
 import { useCreateTreasuryActions } from "@/lib/hooks/use-execute-treasury-action";
 import { parseUnits } from "viem";
+import { StreamStartActionForm } from "./forms/stream-start-proposal";
+import { SelectExistingStreamAction } from "./forms/selec-stream-id";
 
 export type Inputs = {
   title: string;
@@ -57,7 +59,15 @@ export type Inputs = {
       token: string;
     }
   | {
-      type: Exclude<ProposalType, ProposalType.PAYOUT>;
+      type: ProposalType.STREAM_START;
+      recipient: string;
+      amount: string;
+      startTime: string;
+      cliff: string;
+      token: string;
+    }
+  | {
+      type: ProposalType.STREAM_STOP | ProposalType.PAUSE | ProposalType.RESUME;
       id: string;
     }
 );
@@ -78,22 +88,78 @@ export default function CreateActionsPage() {
     control: form.control,
     name: "type",
   });
-  const { createPayoutAction } = useCreateTreasuryActions();
+  const {
+    createPayoutAction,
+    createBatchPayoutAction,
+    createStreamPauseResumeStopAction,
+    createStreamStartAction,
+    isSubmitting,
+  } = useCreateTreasuryActions();
 
   const onSubmit = async (values: Inputs) => {
     console.log("Form Values:", values);
     switch (values.type) {
       case ProposalType.PAYOUT: {
         // Create PAYOUT action on smart contract
-        await createPayoutAction({
-          title: values.title,
-          description: values.description,
-          type: values.type
-        }, {
-          recipient: values.recipient as `0x${string}`,
-          amount: parseUnits(values.amount, 18),
-          token: values.recipient as `0x${string}`,
-        })
+        await createPayoutAction(
+          {
+            title: values.title,
+            description: values.description,
+            type: values.type,
+          },
+          {
+            recipient: values.recipient as `0x${string}`,
+            amount: parseUnits(values.amount, 18),
+            token: values.recipient as `0x${string}`,
+          }
+        );
+        break;
+      }
+      case ProposalType.BATCH_PAYOUT: {
+        await createBatchPayoutAction(
+          {
+            title: values.title,
+            description: values.description,
+            type: values.type,
+          },
+          {
+            recipients: values.recipients as `0x${string}`[],
+            amounts: values.amounts.map((amount) => parseUnits(amount, 18)),
+            token: values.token as `0x${string}`,
+          }
+        );
+        break;
+      }
+      case ProposalType.STREAM_START: {
+        await createStreamStartAction(
+          {
+            title: values.title,
+            description: values.description,
+            type: values.type,
+          },
+          {
+            amount: values.amount,
+            recipient: values.recipient as `0x${string}`,
+            token: values.token as `0x${string}`,
+            startTime: values.startTime,
+            cliff: values.cliff,
+          }
+        );
+        break;
+      }
+      case ProposalType.STREAM_STOP:
+      case ProposalType.PAUSE:
+      case ProposalType.RESUME: {
+        await createStreamPauseResumeStopAction(
+          {
+            title: values.title,
+            description: values.description,
+            type: values.type,
+          },
+          values.id as `0x${string}`,
+          proposalType
+        );
+        break;
       }
     }
   };
@@ -253,59 +319,27 @@ export default function CreateActionsPage() {
                         <BatchPayoutProposalForm
                           proposalType={proposalType}
                           form={form}
+                          isSubmitting={isSubmitting}
                         />
                       ))}
 
-                    {/* <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Voting Options * (1-10)</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addOption}
-                      disabled={votingOptions.length >= 10}
-                      className="gap-2"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Option
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Provide clear voting options for your proposal. Voters will
-                    choose one option.
-                  </p>
-                  <div className="space-y-2">
-                    {votingOptions.map((option, index) => (
-                      <div key={index} className="flex gap-2">
-                        <div className="flex-1 relative">
-                          <Input
-                            value={option}
-                            onChange={(e) =>
-                              updateOption(index, e.target.value)
-                            }
-                            placeholder={`Option ${
-                              index + 1
-                            } (e.g., "Approve", "Reject")`}
-                            className="pr-8"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                            {index + 1}
-                          </span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => removeOption(index)}
-                          disabled={votingOptions.length <= 1}
-                          className="shrink-0"
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div> */}
+                    {proposalType == ProposalType.STREAM_START && (
+                      <StreamStartActionForm
+                        form={form}
+                        isSubmitting={isSubmitting}
+                      />
+                    )}
+
+                    {[
+                      ProposalType.STREAM_STOP,
+                      ProposalType.PAUSE,
+                      ProposalType.RESUME,
+                    ].includes(proposalType) && (
+                      <SelectExistingStreamAction
+                        form={form}
+                        isSubmitting={isSubmitting}
+                      />
+                    )}
                   </div>
                 </form>
               </Form>

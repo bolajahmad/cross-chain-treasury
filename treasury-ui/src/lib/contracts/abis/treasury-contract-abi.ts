@@ -1,407 +1,471 @@
 export const TreasuryContractABI = [
-  {
-    "type": "constructor",
-    "name": "",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "",
-    "inputs": [
-      {
-        "name": "_maxActions",
-        "type": "uint256",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_maxActions",
+          "type": "uint256"
         }
-      }
-    ],
-    "outputs": null
-  },
-  {
-    "type": "function",
-    "name": "actionCount",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "AccessControlBadConfirmation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "neededRole",
+          "type": "bytes32"
         }
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "actions",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "view",
-    "inputs": [
-      {
-        "name": "",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
+      ],
+      "name": "AccessControlUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum ActionType",
+          "name": "actionType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "params",
           "type": "bytes"
         }
-      }
-    ],
-    "outputs": [
-      {
-        "name": "status",
-        "type": "uint8",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
+      ],
+      "name": "ActionCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
         }
-      },
-      {
-        "name": "actionType",
-        "type": "uint8",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
         }
-      },
-      {
-        "name": "exists",
-        "type": "bool",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum ActionType",
+          "name": "actionType",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "params",
+          "type": "bytes"
+        }
+      ],
+      "name": "TreasuryExecution",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "CONTROLLER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "actionCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_params",
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        }
+      ],
+      "name": "createAction",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_type",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_params",
+          "type": "bytes"
+        }
+      ],
+      "name": "createAction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "executeTreasuryAction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
           "type": "bool"
         }
-      },
-      {
-        "name": "executedAt",
-        "type": "uint256",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxActions",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
-      },
-      {
-        "name": "dataHash",
-        "type": "bytes",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "maxActions",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
-        }
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "renounceOwnership",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "nonpayable",
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "createAction",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "nonpayable",
-    "inputs": [
-      {
-        "name": "_id",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      },
-      {
-        "name": "_type",
-        "type": "uint8",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
-        }
-      },
-      {
-        "name": "_params",
-        "type": "bytes",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "owner",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
           "type": "address"
         }
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "executeTreasuryAction",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "nonpayable",
-    "inputs": [
-      {
-        "name": "_id",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "generateActionId",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "view",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "transferOwnership",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "nonpayable",
-    "inputs": [
-      {
-        "name": "newOwner",
-        "type": "address",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "callerConfirmation",
           "type": "address"
         }
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "event",
-    "name": "ActionCreated",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": true,
-        "simple_type": {
-          "type": "bytes"
-        }
-      },
-      {
-        "name": "actionType",
-        "type": "uint8",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
-        }
-      },
-      {
-        "name": "params",
-        "type": "bytes",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ],
-    "outputs": null
-  },
-  {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "",
-    "inputs": [
-      {
-        "name": "previousOwner",
-        "type": "address",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": true,
-        "simple_type": {
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
           "type": "address"
         }
-      },
-      {
-        "name": "newOwner",
-        "type": "address",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": true,
-        "simple_type": {
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
           "type": "address"
         }
-      }
-    ],
-    "outputs": null
-  },
-  {
-    "type": "event",
-    "name": "TreasuryExecution",
-    "constant": false,
-    "anonymous": false,
-    "stateMutability": "",
-    "inputs": [
-      {
-        "name": "id",
-        "type": "bytes32",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": true,
-        "simple_type": {
-          "type": "bytes"
-        }
-      },
-      {
-        "name": "actionType",
-        "type": "uint8",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
-        }
-      },
-      {
-        "name": "amount",
-        "type": "uint256",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "uint"
-        }
-      },
-      {
-        "name": "params",
-        "type": "bytes",
-        "storage_location": "default",
-        "offset": 0,
-        "index": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "indexed": false,
-        "simple_type": {
-          "type": "bytes"
-        }
-      }
-    ],
-    "outputs": null
-  }
-] as const;
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ] as const;

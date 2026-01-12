@@ -11,13 +11,15 @@ export enum ProposalType {
   BATCH_PAYOUT = "BATCH_PAYOUT",
   STREAM_START = "STREAM_START",
   STREAM_STOP = "STREAM_STOP",
+  PAUSE = "PAUSE",
+  RESUME = "RESUME"
 }
 
 export enum ActionStatus {
   PENDING = "PENDING",
   EXECUTED = "EXECUTED",
   PAUSED = "PAUSED",
-  FAILED = "FAILED",
+  STOPPED = "STOPPED",
 }
 
 export const ProposalTypes = [
@@ -37,6 +39,14 @@ export const ProposalTypes = [
     id: ProposalType.STREAM_STOP,
     label: "Stream Stop",
   },
+  {
+    id: ProposalType.PAUSE,
+    label: "Pause"
+  },
+  {
+    id: ProposalType.RESUME,
+    label: "Resume"
+  }
 ];
 
 export type Byte = `0x${string}`;

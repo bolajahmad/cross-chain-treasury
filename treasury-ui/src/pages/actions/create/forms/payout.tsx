@@ -25,9 +25,10 @@ import { Plus, X } from "lucide-react";
 type Props = {
   form: UseFormReturn<Inputs, any, Inputs>;
   proposalType: ProposalType;
+  isSubmitting?: boolean
 };
 
-export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
+export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Props) => {
   const recipient = useWatch({
     control: form.control,
     name: "recipient",
@@ -46,8 +47,6 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
       control: form.control,
       name: "amounts",
     }) || [];
-
-  console.log({ recipients, amounts });
 
   const addRecipientToList = (recipient: string, amount: string) => {
     if (proposalType !== ProposalType.BATCH_PAYOUT) return;
@@ -71,6 +70,22 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
       }
     }
   };
+  const removeRecipients = (rec: "all" | string) => {
+    if (rec == "all") {
+      form.setValue("recipients", [], { shouldDirty: true });
+      form.setValue("amounts", [], { shouldDirty: true });
+    } else {
+      const index = recipients.indexOf(rec);
+      if (index >= 0) {
+        const updatedRecipients = [...recipients];
+        const updatedAmounts = [...amounts];
+        updatedRecipients.splice(index, 1);
+        updatedAmounts.splice(index, 1);
+        form.setValue("recipients", updatedRecipients, { shouldDirty: true });
+        form.setValue("amounts", updatedAmounts, { shouldDirty: true });
+      }
+    }
+  } 
 
   return (
     <Fragment>
@@ -82,7 +97,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Recipient&apos; Address{" "}
+                  Recipient&apos;s Address{" "}
                   <span className="text-xm text-red-400">*</span>
                 </FormLabel>
                 <FormControl>
@@ -172,7 +187,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
                     <span className="inline-block w-full flex-1">Amount</span>
                   </div>
                   <div>
-                    <Button variant="outline" size="sm" type="button">
+                    <Button onClick={() => removeRecipients("all")} variant="outline" size="sm" type="button">
                       Clear
                     </Button>
                   </div>
@@ -192,7 +207,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
                         </span>
                       </div>
                       <div>
-                        <Button variant="ghost" size="sm" type="button">
+                        <Button onClick={() => removeRecipients(rec)} variant="ghost" size="sm" type="button">
                           <X />
                         </Button>
                       </div>
@@ -208,9 +223,9 @@ export const BatchPayoutProposalForm = ({ form, proposalType }: Props) => {
         type="submit"
         size="lg"
         className="w-full mt-6"
-        //   disabled={createProposalMutation.isPending}
+          disabled={isSubmitting}
       >
-        {true ? "Creating Proposal..." : "Submit Proposal"}
+        {isSubmitting ? "Creating Proposal..." : "Submit Proposal"}
       </Button>
     </Fragment>
   );
