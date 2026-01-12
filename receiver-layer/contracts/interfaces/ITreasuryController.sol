@@ -54,22 +54,25 @@ enum ActionType {
     PAYOUT,
     BATCH_PAYOUT,
     STREAM_START,
-    STREAM_STOP
+    STREAM_STOP,
+    PAUSE,
+    RESUME
 }
 
 enum ActionStatus {
+    INVALID,
     PENDING,
     EXECUTED,
     PAUSED,
-    FAILED
+    STOPPED
 }
 
 struct ActionRecord {
     ActionStatus status;
     ActionType actionType;
-    bool exists;
     uint256 executedAt;
     bytes dataHash;
+    address creator; // initiator of the stream
 }
 
 interface ITreasury {

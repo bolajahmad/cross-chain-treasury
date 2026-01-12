@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 import {HyperApp} from "@hyperbridge/core/contracts/apps/HyperApp.sol";
 import "@hyperbridge/core/contracts/interfaces/IApp.sol";
 import "./interfaces/ITreasuryController.sol";
-import {ITreasury} from "./Treasury.sol";
 
 contract TreasuryController is HyperApp {
     event PostReceived(
