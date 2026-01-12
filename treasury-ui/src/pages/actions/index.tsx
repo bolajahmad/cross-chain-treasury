@@ -6,24 +6,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import DisplayProposalStatistics from "./components/proposal-stats";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import DisplayProposalStatistics from "../../components/actions/components/proposal-stats";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@radix-ui/react-separator";
-import { Plus, Vote } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProposerRegistrationCard } from "./components/proposer-registration-card";
-import { ProposalListCard } from "./components/proposal-list";
-import { useQuery } from "@tanstack/react-query";
+import { ProposerRegistrationCard } from "../../components/actions/components/proposer-registration-card";
+import { ProposalListCard } from "../../components/actions/components/proposal-list";
 import Link from "next/link";
 
 export default function ActionsPage() {
-  const { data } = useQuery({
-    queryKey: ["actions-statistics"],
-    queryFn: () => fetch("/api/treasury").then((res) => res.json()),
-  });
-  
-
   return (
     <div className="h-full mx-auto px-4 pb-16 max-w-7xl">
       {/* Display a list of treasury statistics

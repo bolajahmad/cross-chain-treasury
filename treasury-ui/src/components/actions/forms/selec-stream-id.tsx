@@ -11,7 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Fragment, useState } from "react";
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
-import { Inputs } from "..";
+import { Inputs } from "../../../pages/actions/create";
 import {
   FormControl,
   FormField,

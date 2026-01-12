@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -21,9 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProposalType, ProposalTypes } from "@/lib/models/actions";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import { BatchPayoutProposalForm } from "./forms/payout";
+import { useForm, useWatch } from "react-hook-form";
+import { BatchPayoutProposalForm } from "../../../components/actions/forms/payout";
 import {
   Form,
   FormControl,
@@ -32,13 +30,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useWriteContract } from "wagmi";
-import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
-import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
 import { useCreateTreasuryActions } from "@/lib/hooks/use-execute-treasury-action";
 import { parseUnits } from "viem";
-import { StreamStartActionForm } from "./forms/stream-start-proposal";
-import { SelectExistingStreamAction } from "./forms/selec-stream-id";
+import { StreamStartActionForm } from "../../../components/actions/forms/stream-start-proposal";
+import { SelectExistingStreamAction } from "../../../components/actions/forms/selec-stream-id";
 
 export type Inputs = {
   title: string;
