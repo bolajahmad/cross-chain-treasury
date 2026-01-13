@@ -18,7 +18,7 @@ export const networksConfigs: Record<string, NetworkConfig> = {
     ),
     finalityConfirmation: 75,
     startAtBlock: 36222660,
-    contract: "0xBCDe18F053AD8F6Ca6Fb0e7d80b051bD77350126".toLowerCase(),
+    contract: "0x062F3Dcf2D3584a0095a52Ccec29975bfCf3A7a1".toLowerCase(),
     chain: "base",
   },
   eth: {
@@ -29,7 +29,7 @@ export const networksConfigs: Record<string, NetworkConfig> = {
     ),
     finalityConfirmation: 15,
     startAtBlock: 10016240,
-    contract: "0x6E152F7CDba7ecdec2406c3Cf9Fa48a24cf54D1a".toLowerCase(),
+    contract: "0x52B6df3c98225F040b9B89A07180E7Bc6ba34f87".toLowerCase(),
     chain: "eth",
   },
 };

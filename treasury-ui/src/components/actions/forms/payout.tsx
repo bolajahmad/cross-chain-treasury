@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -9,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Inputs } from "../../../pages/actions/create";
 import {
@@ -70,7 +69,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Pr
       }
     }
   };
-  const removeRecipients = (rec: "all" | string) => {
+  const removeRecipients = (rec: string) => {
     if (rec == "all") {
       form.setValue("recipients", [], { shouldDirty: true });
       form.setValue("amounts", [], { shouldDirty: true });

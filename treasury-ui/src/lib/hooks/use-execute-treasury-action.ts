@@ -9,8 +9,9 @@ import {
   encodePayoutActionParameters,
   encodeStreamStartActionParameters,
 } from "../abi-codec";
-import { encodeAbiParameters, stringToHex, zeroAddress } from "viem";
+import { encodeAbiParameters, stringToHex } from "viem";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 type PayoutParams = {
   recipient: `0x${string}`;
@@ -68,7 +69,7 @@ export function useCreateTreasuryActions() {
     const paramsHash = encodePayoutActionParameters(
       params.recipient,
       params.amount,
-      zeroAddress, // TODO: should be token address
+      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285", // TODO: should be token address
       stringToHex(metadataHash.hash)
     );
     console.log({ paramsHash });
@@ -102,7 +103,7 @@ export function useCreateTreasuryActions() {
     const paramsHash = encodeBatchPayoutActionParameters(
       params.recipients,
       params.amounts,
-      zeroAddress,
+      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285",
       stringToHex(metadataHash.hash)
     );
     console.log({ paramsHash });
@@ -136,9 +137,9 @@ export function useCreateTreasuryActions() {
     const paramsHash = encodeStreamStartActionParameters(
       params.recipient,
       BigInt(params.amount),
-      BigInt(params.startTime),
+      BigInt(new Date(params.startTime).getTime()),
       BigInt(params.cliff),
-      zeroAddress,
+      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285",
       stringToHex(metadataHash.hash)
     );
     console.log({ paramsHash });

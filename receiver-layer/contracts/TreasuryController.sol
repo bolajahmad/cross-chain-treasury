@@ -24,7 +24,12 @@ contract TreasuryController is HyperApp, Ownable {
         uint256 amount
     );
 
-    constructor(address ismpHost, address treasuryAddress, uint256 sourceChainId, bytes memory sourceApp) Ownable(msg.sender) {
+    constructor(
+        address ismpHost,
+        address treasuryAddress,
+        uint256 sourceChainId,
+        bytes memory sourceApp
+    ) Ownable(msg.sender) {
         _host = ismpHost;
         treasury = ITreasury(treasuryAddress);
         SOURCE_CHAIN = StateMachine.evm(sourceChainId);
@@ -37,7 +42,10 @@ contract TreasuryController is HyperApp, Ownable {
 
     function onAccept(IncomingPostRequest memory incoming) external override {
         // Verify the origin of message
-        require(keccak256(incoming.request.source) == keccak256(SOURCE_CHAIN), "Invalid source chain");
+        require(
+            keccak256(incoming.request.source) == keccak256(SOURCE_CHAIN),
+            "Invalid source chain"
+        );
         require(
             keccak256(incoming.request.from) == keccak256(SOURCE_APP),
             "Invalid source app"
@@ -62,7 +70,7 @@ contract TreasuryController is HyperApp, Ownable {
 
         // decode request body
         bytes32 actionId = sha256(_metadata);
-        
+
         // make any necessary state changes
         try treasury.createAction(actionId, _actionType, _action) {
             emit ActionReceived(incoming.relayer, actionId, _amount);

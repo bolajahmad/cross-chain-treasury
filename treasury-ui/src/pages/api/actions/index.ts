@@ -41,7 +41,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const {
-    limit = "10",
+    limit = "12",
     page = "1",
     network,
     id,

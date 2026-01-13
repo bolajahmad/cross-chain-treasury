@@ -8,7 +8,7 @@ export const events = {
     RoleAdminChanged: event("0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff", "RoleAdminChanged(bytes32,bytes32,bytes32)", {"role": indexed(p.bytes32), "previousAdminRole": indexed(p.bytes32), "newAdminRole": indexed(p.bytes32)}),
     RoleGranted: event("0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d", "RoleGranted(bytes32,address,address)", {"role": indexed(p.bytes32), "account": indexed(p.address), "sender": indexed(p.address)}),
     RoleRevoked: event("0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b", "RoleRevoked(bytes32,address,address)", {"role": indexed(p.bytes32), "account": indexed(p.address), "sender": indexed(p.address)}),
-    TreasuryExecution: event("0xe54f376c16c9814fd3dfc2049ffe795da7f2707e2c8ee002b1190c0f7d3ea421", "TreasuryExecution(bytes32,uint8,uint256,bytes)", {"id": indexed(p.bytes32), "actionType": p.uint8, "amount": p.uint256, "params": p.bytes}),
+    TreasuryExecution: event("0x0e33e2055f99f8760e54593bc0d636b11581c4e084d9fda3441408b72604adf8", "TreasuryExecution(bytes32,uint8)", {"id": indexed(p.bytes32), "actionType": p.uint8}),
 }
 
 export const functions = {
