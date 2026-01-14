@@ -13,7 +13,8 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
     /* Immutable variables */
     // The deployed MNEE stablecoin on testnet
     IERC20 public immutable mnee;
-    IERC20 public immutable feeToken;
+    IERC20 public immutable feeToken; // Hyperbridge fee token for the chain
+
     address private _host;
 
     enum EscrowStatus {
@@ -24,20 +25,24 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
     }
 
     struct Escrow {
-        address depositor;
+        address depositor; // The action creator, will get the refund if any
         bytes action; // recipient counterpart on destination chain
-        uint256 amount;
-        uint256 released;
+        uint256 amount; // The amount sent to the contract, precedes the encoded value
+        uint256 released; // Amount already released to recipient, if stream action
         EscrowStatus status;
     }
 
+    // Map the action bytes to the escrow, acoids decoding here
     mapping(bytes => Escrow) public escrows;
+    // TODO: should ideally be a byte,
+    // Using uint256 assumes this will only work for EVM chain
     uint256 public network = 84532;
 
     event DepositIntent(
         address indexed from,
-        bytes32 indexed actionId,
-        bytes body
+        bytes indexed action,
+        bytes body,
+        bytes32 commitmentId
     );
     event FundsReleased(
         bytes indexed action,
@@ -49,11 +54,6 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         address indexed depositor,
         uint256 amount
     );
-
-    modifier onlyMessenger() {
-        require(msg.sender == _host, "Not messenger");
-        _;
-    }
 
     constructor(address _mnee, address _fee) {
         mnee = IERC20(_mnee);
@@ -69,31 +69,42 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
     function onAccept(
         IncomingPostRequest calldata incoming
-    ) external override nonReentrant {
+    ) external override nonReentrant onlyHost {
         require(
-            keccak256(incoming.request.source) == keccak256(StateMachine.evm(network)),
+            keccak256(incoming.request.source) ==
+                keccak256(StateMachine.evm(network)),
             "Invalid source chain"
         );
 
-        (bytes memory action, address recipient, uint256 amount) = abi.decode(
-            incoming.request.body,
-            (bytes, address, uint256)
-        );
+        (
+            bytes memory action,
+            address recipient,
+            uint256 amount,
+            uint8 actionType
+        ) = abi.decode(incoming.request.body, (bytes, address, uint256, uint8));
 
-        Escrow storage escrow = escrows[action];
-        require(escrow.released == escrow.amount, "Completed");
+        if (actionType == 3) {
+            refund(action);
+        } else {
+            Escrow storage escrow = escrows[action];
+            require(escrow.released != escrow.amount, "Completed");
 
-        require(escrow.released + amount <= escrow.amount, "Exceeds escrow");
+            require(
+                escrow.released + amount <= escrow.amount,
+                "Exceeds escrow"
+            );
 
-        escrow.released += amount;
+            escrow.released += amount;
 
-        if (escrow.released == escrow.amount) {
-            escrow.status = EscrowStatus.COMPLETED;
+            if (escrow.released == escrow.amount) {
+                escrow.status = EscrowStatus.COMPLETED;
+            } else {
+                escrow.status = EscrowStatus.PARTIAL;
+            }
+
+            mnee.transfer(recipient, amount);
+            emit FundsReleased(action, recipient, amount);
         }
-
-        mnee.transfer(recipient, amount);
-
-        emit FundsReleased(action, recipient, amount);
     }
 
     /**
@@ -121,11 +132,7 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
             "transfer failed"
         );
 
-        bytes memory body = abi.encode(
-            actionType,
-            amount, // the actual amount deposited, overwrites what's in the action
-            action
-        );
+        bytes memory body = abi.encode(actionType, amount, action);
 
         // construct the message to dispatch
         DispatchPost memory post = DispatchPost({
@@ -148,7 +155,7 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
                 status: EscrowStatus.LOCKED
             });
 
-            emit DepositIntent(msg.sender, commitment, body);
+            emit DepositIntent(msg.sender, action, body, commitment);
         } catch Error(string memory reason) {
             revert(string.concat("DISPATCH_FAILED: ", reason));
         } catch {
@@ -158,12 +165,10 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
     /**
      * @notice Refunds remaining funds to depositor
-     *         Used when destination action is stopped or expires
+     *         Used when destination action is stopped
      */
-    function refund(bytes calldata action) internal nonReentrant {
+    function refund(bytes memory action) internal nonReentrant {
         Escrow storage escrow = escrows[action];
-
-        require(msg.sender == escrow.depositor, "Only depositor");
 
         require(
             escrow.status == EscrowStatus.LOCKED ||

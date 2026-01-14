@@ -40,7 +40,7 @@ contract TreasuryController is HyperApp, Ownable {
         return _host;
     }
 
-    function onAccept(IncomingPostRequest memory incoming) external override {
+    function onAccept(IncomingPostRequest memory incoming) external override onlyHost {
         // Verify the origin of message
         require(
             keccak256(incoming.request.source) == keccak256(SOURCE_CHAIN),
@@ -98,5 +98,13 @@ contract TreasuryController is HyperApp, Ownable {
 
     function changeTreasury(address _treasury) external onlyOwner {
         treasury = ITreasury(_treasury);
+    }
+
+    function updateSourceApp(address _sourceApp) external onlyOwner {
+        SOURCE_APP = abi.encodePacked(_sourceApp);
+    }
+
+    function updateSourceChain(uint256 _sourceChainId) external onlyOwner {
+        SOURCE_CHAIN = StateMachine.evm(_sourceChainId);
     }
 }

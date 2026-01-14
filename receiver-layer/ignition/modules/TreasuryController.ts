@@ -9,7 +9,7 @@ const TreasuryControllerModule = buildModule("TreasuryController", (m) => {
   const TREASURY = "0xBCDe18F053AD8F6Ca6Fb0e7d80b051bD77350126";
 
   const sourceChainId = 11155111;
-  const sourceApp = "0x52B6df3c98225F040b9B89A07180E7Bc6ba34f87";
+  const sourceApp = "0x2Cea0acbab5D5788d241D7279b2ebE0C5d49512D";
 
   const token = m.contract("TreasuryController", [
     HOST,

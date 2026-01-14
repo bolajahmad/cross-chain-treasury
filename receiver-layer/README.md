@@ -1,19 +1,24 @@
-# Sample Hardhat 3 Beta Project (`node:test` and `viem`)
+# X-Chain Programmable Vault
 
 This project showcases a Hardhat 3 Beta project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
-
 ## Project Overview
 
-This example project includes:
+This project includes:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+- A Mock token contract
+- A [TokenReceiver](./contracts/TokenReceiver.sol) contract
+- A [Controller](./contracts/TreasuryController.sol) contract
+- A final [Actions](./contracts/Treasury.sol) contract
 
-## Usage
+## Deploying
+
+The smart contracts each rely on the other and to deploy them, they have to follow a structure.
+
+a. First, deploy the Mock token contract (as this is needed in the constructor of TokenReceiver)
+b. Deploy the token receiver contract
+c. Deploy the Controller 
+d. Deploy the last one, Actions contract
 
 ### Running Tests
 
