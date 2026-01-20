@@ -15,7 +15,7 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
     IERC20 public immutable mnee;
     IERC20 public immutable feeToken; // Hyperbridge fee token for the chain
 
-    address private _host;
+    address private immutable _host;
 
     enum EscrowStatus {
         LOCKED, // funds locked, still awaiting execution
@@ -26,14 +26,13 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
     struct Escrow {
         address depositor; // The action creator, will get the refund if any
-        bytes action; // recipient counterpart on destination chain
         uint256 amount; // The amount sent to the contract, precedes the encoded value
         uint256 released; // Amount already released to recipient, if stream action
         EscrowStatus status;
     }
 
     // Map the action bytes to the escrow, acoids decoding here
-    mapping(bytes => Escrow) public escrows;
+    mapping(bytes32 => Escrow) public escrows;
     // TODO: should ideally be a byte,
     // Using uint256 assumes this will only work for EVM chain
     uint256 public network = 84532;
@@ -55,11 +54,11 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         uint256 amount
     );
 
-    constructor(address _mnee, address _fee) {
+    constructor(address _mnee, address _fee, address _h) {
         mnee = IERC20(_mnee);
         feeToken = IERC20(_fee);
         console.log("Fee token address:", _fee);
-        _host = 0x2EdB74C269948b60ec1000040E104cef0eABaae8;
+        _host = _h;
         IERC20(_fee).approve(_host, type(uint256).max);
     }
 
@@ -86,7 +85,7 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         if (actionType == 3) {
             refund(action);
         } else {
-            Escrow storage escrow = escrows[action];
+            Escrow storage escrow = escrows[keccak256(action)];
             require(escrow.released != escrow.amount, "Completed");
 
             require(
@@ -94,6 +93,9 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
                 "Exceeds escrow"
             );
 
+            if (actionType != 1) {
+                require(amount == escrow.amount, "Invalid amount");
+            }
             escrow.released += amount;
 
             if (escrow.released == escrow.amount) {
@@ -147,9 +149,8 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         // call bridge messenger to send ISMP message
         try IDispatcher(_host).dispatch(post) returns (bytes32 commitment) {
             /* ---- Create escrow ---- */
-            escrows[action] = Escrow({
+            escrows[keccak256(action)] = Escrow({
                 depositor: msg.sender,
-                action: action,
                 amount: amount,
                 released: 0,
                 status: EscrowStatus.LOCKED
@@ -167,8 +168,8 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
      * @notice Refunds remaining funds to depositor
      *         Used when destination action is stopped
      */
-    function refund(bytes memory action) internal nonReentrant {
-        Escrow storage escrow = escrows[action];
+    function refund(bytes memory action) internal {
+        Escrow storage escrow = escrows[keccak256(action)];
 
         require(
             escrow.status == EscrowStatus.LOCKED ||
@@ -187,5 +188,9 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
     function updateNetworkId(uint256 _network) external {
         network = _network;
+    }
+
+    function currentNetwork() external view returns (bytes memory) {
+        return StateMachine.evm(network);
     }
 }
