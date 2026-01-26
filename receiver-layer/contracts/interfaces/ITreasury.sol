@@ -22,9 +22,9 @@ enum ActionStatus {
 struct ActionRecord {
     ActionStatus status;
     ActionType actionType;
-    uint256 executedAt;
+    address creator;
     bytes data;
-    address creator; // initiator of the stream
+    uint256 executedAt; // initiator of the stream
 }
 
 struct Action {

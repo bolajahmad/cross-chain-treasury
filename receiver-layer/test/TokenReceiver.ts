@@ -11,6 +11,7 @@ import {
   zeroAddress,
 } from "viem";
 import { randomBytes } from "node:crypto";
+import { encodeReceiverData } from "./utils/codec.js";
 
 const { viem } = await network.connect();
 
@@ -90,14 +91,8 @@ describe("TokenReceiver", () => {
       { account: user.account },
     );
 
-    const body = encodeAbiParameters(
-      [
-        { type: "bytes" },
-        { type: "address" },
-        { type: "uint256" },
-        { type: "uint8" },
-      ],
-      [ACTION, recipient.account.address, AMOUNT, 0],
+    const body = encodeReceiverData(
+      0, ACTION, recipient.account.address, AMOUNT,
     );
 
     let network = await receiver.read.currentNetwork();
@@ -132,14 +127,8 @@ describe("TokenReceiver", () => {
       { account: user.account },
     );
 
-    const body = encodeAbiParameters(
-      [
-        { type: "bytes" },
-        { type: "address" },
-        { type: "uint256" },
-        { type: "uint8" },
-      ],
-      [ACTION, recipient.account.address, AMOUNT, 1],
+    const body = encodeReceiverData(
+     1, ACTION, recipient.account.address, AMOUNT,
     );
 
     let network = await receiver.read.currentNetwork();
@@ -174,14 +163,8 @@ describe("TokenReceiver", () => {
       { account: user.account },
     );
 
-    const body = encodeAbiParameters(
-      [
-        { type: "bytes" },
-        { type: "address" },
-        { type: "uint256" },
-        { type: "uint8" },
-      ],
-      [ACTION, zeroAddress, 0n, 3],
+    const body = encodeReceiverData(
+      3, ACTION, zeroAddress, 0n,
     );
 
     let network = await receiver.read.currentNetwork();
@@ -214,14 +197,8 @@ describe("TokenReceiver", () => {
       { account: user.account },
     );
 
-    const body = encodeAbiParameters(
-      [
-        { type: "bytes" },
-        { type: "address" },
-        { type: "uint256" },
-        { type: "uint8" },
-      ],
-      [ACTION, recipient.account.address, parseUnits("20", 18), 1],
+    const body = encodeReceiverData(
+      1, ACTION, recipient.account.address, parseUnits("20", 18)
     );
 
     await assert.rejects(async () => {

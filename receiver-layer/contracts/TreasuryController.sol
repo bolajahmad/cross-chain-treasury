@@ -12,8 +12,8 @@ contract TreasuryController is HyperApp, Ownable {
     // IIsmpHost Address
     address private _host;
 
-    bytes private SOURCE_CHAIN;
-    bytes private SOURCE_APP; // Token receiver on source chain
+    bytes public SOURCE_CHAIN;
+    bytes public SOURCE_APP; // Token receiver on source chain
 
     ITreasury public treasury;
     mapping(bytes => bool) public processed;

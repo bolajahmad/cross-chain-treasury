@@ -126,13 +126,13 @@ contract Treasury is Ownable, AccessControl {
             state.lockedBalances[_token] += _value;
         }
 
-        Action storage action = state.actions[_id];
-        action.record.status = ActionStatus.PENDING;
-        action.record.actionType = ActionType(_type);
-        action.record.data = _params;
-        action.record.executedAt = 0;
-        action.record.creator = msg.sender;
-        action.token = _token;
+        Action storage _action = state.actions[_id];
+        _action.record.status = ActionStatus.PENDING;
+        _action.record.actionType = ActionType(_type);
+        _action.record.data = _params;
+        _action.record.executedAt = 0;
+        _action.record.creator = msg.sender;
+        _action.token = _token;
 
         actionCount += 1;
 
@@ -140,9 +140,9 @@ contract Treasury is Ownable, AccessControl {
     }
 
     function executeTreasuryAction(bytes32 _id) public {
-        ActionRecord memory action = state.actions[_id].record;
-        require(action.status != ActionStatus.INVALID, "Action does not exist");
-        ActionType actionType = action.actionType;
+        ActionRecord memory a = state.actions[_id].record;
+        require(a.status != ActionStatus.INVALID, "Action does not exist");
+        ActionType actionType = a.actionType;
 
         if (actionType == ActionType.PAYOUT) {
             state.executePayout(_id);
@@ -187,5 +187,17 @@ contract Treasury is Ownable, AccessControl {
 
     function maxActions() public view returns (uint256) {
         return maxActions$;
+    }
+
+    function action(bytes32 actionId) public view returns (Action memory) {
+        return state.actions[actionId];
+    }
+
+    function cliffsPaid(bytes32 actionId) public view returns (uint8) {
+        return state.cliffsPaid[actionId];
+    }
+
+    function lockedBalance(address token) public view returns (uint256) {
+        return state.lockedBalances[token];
     }
 }
