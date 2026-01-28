@@ -4,22 +4,21 @@ pragma solidity ^0.8.28;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import "./library/PayoutActions.sol";
-import "./library/StreamActions.sol";
+import "./interfaces/ITreasuryController.sol";
+import "./interfaces/ITreasury.sol";
 
 contract Treasury is Ownable, AccessControl {
-    using PayoutActions for ActionStorage;
-    using StreamActions for ActionStorage;
-
     ActionStorage internal state;
 
     uint256 private maxActions$;
+    mapping(ActionType => address) private executors;
 
     uint256 public actionCount;
     uint8 constant MAX_STREAM_CLIFFS = 5;
 
     // ROLES
     bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
+    bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
 
     // Stores action records with associated token addresses
     struct ActionData {
@@ -28,7 +27,10 @@ contract Treasury is Ownable, AccessControl {
     }
 
     modifier onlyUniqueId(bytes32 _id) {
-        require(state.actions[_id].record.status == ActionStatus.INVALID, "Only Unique IDs");
+        require(
+            state.actions[_id].record.status == ActionStatus.INVALID,
+            "Only Unique IDs"
+        );
         _;
     }
     modifier onlyValidType(uint8 _id) {
@@ -40,22 +42,26 @@ contract Treasury is Ownable, AccessControl {
         _;
     }
 
+    modifier onlyExecutor(address _addr) {
+        require(hasRole(EXECUTOR_ROLE, _addr), "Only Executor");
+        _;
+    }
+
     event ActionCreated(
         bytes32 indexed id,
         ActionType actionType,
         bytes params
     );
-    event TreasuryExecution(
-        bytes32 indexed id,
-        ActionType actionType
-    );
+    event TreasuryExecution(bytes32 indexed id, ActionType actionType);
 
     constructor(uint256 _maxActions) Ownable(msg.sender) {
         maxActions$ = _maxActions;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(CONTROLLER_ROLE, msg.sender);
-        // Contract deployer shoiuld be the initial controller
+        _grantRole(EXECUTOR_ROLE, msg.sender);
+        // Contract deployer should be the initial controller
         _setRoleAdmin(CONTROLLER_ROLE, DEFAULT_ADMIN_ROLE);
+        _setRoleAdmin(EXECUTOR_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
     /**
@@ -78,13 +84,13 @@ contract Treasury is Ownable, AccessControl {
         onlyValidType(_type) // Type must be greater than 0 & less than maxActions$
         onlyController(msg.sender)
     {
-        Action storage action = state.actions[_id];
-        action.record.status = ActionStatus.PENDING;
-        action.record.actionType = ActionType(_type);
-        action.record.data = _params;
-        action.record.executedAt = 0;
-        action.record.creator = msg.sender;
-        action.token = msg.sender;
+        Action storage _action = state.actions[_id];
+        _action.record.status = ActionStatus.PENDING;
+        _action.record.actionType = ActionType(_type);
+        _action.record.data = _params;
+        _action.record.executedAt = 0;
+        _action.record.creator = msg.sender;
+        _action.token = msg.sender;
         actionCount += 1;
 
         emit ActionCreated(_id, ActionType(_type), _params);
@@ -108,22 +114,30 @@ contract Treasury is Ownable, AccessControl {
         address _token
     ) public payable onlyUniqueId(_id) onlyValidType(_type) {
         // decode the _params to read the action
-        (, uint256 _value, , ) = abi.decode(
-            _params,
-            (address, uint256, address, bytes)
-        );
-        require(msg.value > 0 || _value > 0, "Value must be > 0");
+        (address recipient, uint256 _value) = decodedParams(_type, _params);
 
-        if (_token == address(0)) {
-            require(msg.value == _value, "ETH value mismatch");
-            state.lockedBalances[address(0)] += _value;
-        } else {
-            require(_value > 0, "Value must be > 0");
-            require(
-                IERC20(_token).transferFrom(msg.sender, address(this), _value),
-                "Unable to transfer ERC20"
-            );
-            state.lockedBalances[_token] += _value;
+        if (
+            _type != uint8(ActionType.PAUSE) &&
+            _type != uint8(ActionType.RESUME) &&
+            _type != uint8(ActionType.STREAM_STOP)
+        ) {
+            require(_value > 0 || msg.value >= _value, "Value must provided");
+
+            if (_token == address(0)) {
+                require(msg.value == _value, "Native tokens value mismatch");
+                state.lockedBalances[address(0)] += _value;
+            } else {
+                require(_value > 0, "Value must be > 0");
+                require(
+                    IERC20(_token).transferFrom(
+                        msg.sender,
+                        address(this),
+                        _value
+                    ),
+                    "Unable to transfer ERC20"
+                );
+                state.lockedBalances[_token] += _value;
+            }
         }
 
         Action storage _action = state.actions[_id];
@@ -139,50 +153,65 @@ contract Treasury is Ownable, AccessControl {
         emit ActionCreated(_id, ActionType(_type), _params);
     }
 
-    function executeTreasuryAction(bytes32 _id) public {
+    function executeAction(bytes32 _id) public {
         ActionRecord memory a = state.actions[_id].record;
         require(a.status != ActionStatus.INVALID, "Action does not exist");
         ActionType actionType = a.actionType;
 
-        if (actionType == ActionType.PAYOUT) {
-            state.executePayout(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
+        require(executors[actionType] != address(0), "No executor set");
+
+        IExecutor(executors[actionType]).execute(address(this), _id);
+        emit TreasuryExecution(_id, actionType);
+    }
+
+    function makePayout(
+        address token,
+        bytes32 id,
+        address recipient,
+        uint256 amount
+    ) external onlyExecutor(msg.sender) {
+        if (token == address(0)) {
+            (bool sent, ) = payable(recipient).call{value: amount}("");
+            require(sent, "Token transfer failed");
+        } else if (hasRole(CONTROLLER_ROLE, token)) {
+            ActionRecord memory _record = state.actions[id].record;
+            bytes memory params = abi.encode(
+                _record.data,
+                recipient,
+                amount,
+                _record.actionType
             );
-        } else if (actionType == ActionType.BATCH_PAYOUT) {
-            state.executeBatchPayout(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
-            );
-        } else if (actionType == ActionType.STREAM_START) {
-           state.executeStreamStart(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
-            );
-        } else if (actionType == ActionType.STREAM_STOP) {
-            state.executeStreamStop(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
-            );
-        } else if (actionType == ActionType.PAUSE) {
-            state.executePause(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
-            );
-        } else if (actionType == ActionType.RESUME) {
-            state.executeResume(_id);
-            emit TreasuryExecution(
-                _id,
-                actionType
+            require(
+                IController(token).relayExecutionResult(params),
+                "Execution not sent!"
             );
         } else {
-            revert("Invalid Action Type");
+            require(
+                IERC20(token).transfer(recipient, amount),
+                "ERC20 transfer failed"
+            );
         }
+
+        state.lockedBalances[token] -= amount;
+        if (state.actions[id].record.actionType == ActionType.STREAM_START) {
+            state.cliffsPaid[id] += 1;
+        }
+        // TODO: emit payout event
+    }
+
+    function finalizeAction(bytes32 _id) external onlyExecutor(msg.sender) {
+        ActionType actionType = state.actions[_id].record.actionType;
+        if (actionType == ActionType.STREAM_START) {
+            delete state.cliffsPaid[_id];
+        }
+        delete state.actions[_id];
+
+        // TODO: emit finalization action
+    }
+
+    function updateStatus(bytes32 _id, ActionStatus _status) external onlyExecutor(msg.sender) {
+        ActionRecord storage record = state.actions[_id].record;
+        record.status = _status;
     }
 
     function maxActions() public view returns (uint256) {
@@ -199,5 +228,44 @@ contract Treasury is Ownable, AccessControl {
 
     function lockedBalance(address token) public view returns (uint256) {
         return state.lockedBalances[token];
+    }
+
+    function setExecutor(
+        ActionType _type,
+        address _executor
+    ) external onlyExecutor(msg.sender) {
+        require(_executor.code.length > 0, "Not a contract");
+        require(executors[_type] == address(0), "Already set");
+        executors[_type] = _executor;
+        _grantRole(EXECUTOR_ROLE, _executor);
+    }
+
+    function decodedParams(
+        uint8 _type,
+        bytes memory _action
+    ) internal pure returns (address, uint256) {
+        if (_type == uint8(ActionType.PAYOUT)) {
+            (address recipient, uint256 _amount, , ) = abi.decode(
+                _action,
+                (address, uint256, address, bytes)
+            );
+            return (recipient, _amount);
+        } else if (_type == uint8(ActionType.BATCH_PAYOUT)) {
+            (address[] memory recipients, uint256[] memory _amounts, , ) = abi
+                .decode(_action, (address[], uint256[], address, bytes));
+            uint256 totalAmount = 0;
+            for (uint256 i = 0; i < _amounts.length; i++) {
+                totalAmount += _amounts[i];
+            }
+            return (recipients[0], totalAmount);
+        } else if (_type == uint8(ActionType.STREAM_START)) {
+            (address recipient, uint256 _amount, , ) = abi.decode(
+                _action,
+                (address, uint256, uint64, uint64)
+            );
+            return (recipient, _amount);
+        } else {
+            return (address(0), 0);
+        }
     }
 }

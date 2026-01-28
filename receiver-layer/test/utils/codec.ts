@@ -25,6 +25,30 @@ export const encodeActionData = (recipient: `0x${string}`, amount: bigint, metad
     )
 }
 
+export const encodeBatchPayoutData = (recipients: `0x${string}`[], amounts: bigint[], metadata: `0x${string}`, token: `0x${string}` = zeroAddress) => {
+    return encodeAbiParameters(
+        [
+            { type: "address[]" },
+            { type: "uint256[]" },
+            { type: "address" },
+            { type: "bytes" }
+        ],
+        [recipients, amounts, token, metadata]
+    )
+}
+
+export const encodeStreamStartData = (recipient: `0x${string}`, amount: bigint, startTime: bigint, cliff: bigint) => {
+    return encodeAbiParameters(
+        [
+            { type: "address" },
+            { type: "uint256" },
+            { type: "uint64" },
+            { type: "uint64" }
+        ],
+        [recipient, amount, startTime, cliff]
+    )
+}
+
 export const encodeControllerAcceptData = (actionType: number, amount: bigint, action: `0x${string}`) => {
     return encodeAbiParameters(
         [

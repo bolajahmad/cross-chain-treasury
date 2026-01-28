@@ -5,7 +5,7 @@ import {HyperApp} from "@hyperbridge/core/contracts/apps/HyperApp.sol";
 import "@hyperbridge/core/contracts/interfaces/IApp.sol";
 import "@hyperbridge/core/contracts/libraries/StateMachine.sol";
 import "@hyperbridge/core/contracts/interfaces/IDispatcher.sol";
-import "./interfaces/ITreasuryController.sol";
+import "./interfaces/ITreasury.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 contract TreasuryController is HyperApp, Ownable {
@@ -15,7 +15,7 @@ contract TreasuryController is HyperApp, Ownable {
     bytes public SOURCE_CHAIN;
     bytes public SOURCE_APP; // Token receiver on source chain
 
-    ITreasury public treasury;
+    IAction public treasury;
     mapping(bytes => bool) public processed;
 
     event ActionReceived(
@@ -31,7 +31,7 @@ contract TreasuryController is HyperApp, Ownable {
         bytes memory sourceApp
     ) Ownable(msg.sender) {
         _host = ismpHost;
-        treasury = ITreasury(treasuryAddress);
+        treasury = IAction(treasuryAddress);
         SOURCE_CHAIN = StateMachine.evm(sourceChainId);
         SOURCE_APP = sourceApp;
     }
@@ -97,7 +97,7 @@ contract TreasuryController is HyperApp, Ownable {
     }
 
     function changeTreasury(address _treasury) external onlyOwner {
-        treasury = ITreasury(_treasury);
+        treasury = IAction(_treasury);
     }
 
     function updateSourceApp(address _sourceApp) external onlyOwner {
