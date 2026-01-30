@@ -5,7 +5,7 @@ import {HyperApp} from "@hyperbridge/core/contracts/apps/HyperApp.sol";
 import "@hyperbridge/core/contracts/interfaces/IApp.sol";
 import "@hyperbridge/core/contracts/libraries/StateMachine.sol";
 import "@hyperbridge/core/contracts/interfaces/IDispatcher.sol";
-import "./interfaces/ITreasury.sol";
+import "./interfaces/IActions.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 contract TreasuryController is HyperApp, Ownable {

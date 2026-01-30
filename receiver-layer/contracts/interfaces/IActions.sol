@@ -99,3 +99,7 @@ interface IAction {
 interface IExecutor {
     function execute(address treasury, bytes32 id) external;
 }
+
+error UnauthorizedExecutor();
+error InsufficientFunds();
+error InvalidAction();

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import {IAction, Action, ActionStatus, ActionType} from "./interfaces/ITreasury.sol";
+import {IAction, Action, ActionStatus, ActionType} from "./interfaces/IActions.sol";
 import "./library/ExecutorErrors.sol";
 
 contract PayoutExecutor {
@@ -41,13 +41,13 @@ contract PayoutExecutor {
         bool isBatch
     ) internal pure returns (address[] memory, uint256[] memory) {
         if (isBatch) {
-            (address[] memory recipients, uint256[] memory amounts, , ) = abi
-                .decode(_a, (address[], uint256[], address, bytes));
+            (address[] memory recipients, uint256[] memory amounts,) = abi
+                .decode(_a, (address[], uint256[], bytes));
             return (recipients, amounts);
         } else {
-            (address recipient, uint256 amount, , ) = abi.decode(
+            (address recipient, uint256 amount,) = abi.decode(
                 _a,
-                (address, uint256, address, bytes)
+                (address, uint256, bytes)
             );
             address[] memory recipients = new address[](1);
             uint256[] memory amounts = new uint256[](1);

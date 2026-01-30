@@ -18,10 +18,9 @@ export const encodeActionData = (recipient: `0x${string}`, amount: bigint, metad
         [
             { type: "address" },
             { type: "uint256" },
-            { type: "address" },
             { type: "bytes" }
         ],
-        [recipient, amount, token, metadata]
+        [recipient, amount, metadata]
     )
 }
 
@@ -30,10 +29,9 @@ export const encodeBatchPayoutData = (recipients: `0x${string}`[], amounts: bigi
         [
             { type: "address[]" },
             { type: "uint256[]" },
-            { type: "address" },
             { type: "bytes" }
         ],
-        [recipients, amounts, token, metadata]
+        [recipients, amounts, metadata]
     )
 }
 

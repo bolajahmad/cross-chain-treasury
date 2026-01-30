@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import {IAction, Action, ActionStatus, ActionType} from "./interfaces/ITreasury.sol";
+import {IAction, Action, ActionStatus, ActionType} from "./interfaces/IActions.sol";
 import "./library/ExecutorErrors.sol";
 
 contract StreamExecutor {

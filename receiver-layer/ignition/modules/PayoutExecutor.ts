@@ -3,11 +3,10 @@
 
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-const TreasuryModule = buildModule("Treasury", (m) => {
-    const MAX_ACTIONS = 20;
-    const token = m.contract("Treasury", [MAX_ACTIONS])
+const PayoutExecutor = buildModule("PayoutExecutor", (m) => {
+    const payout = m.contract("PayoutExecutor")
 
-    return { token }
+    return { payout }
 })
 
-module.exports = TreasuryModule
+module.exports = PayoutExecutor
