@@ -31,7 +31,7 @@ describe("Treasury", async () => {
     recipient = c;
 
     token = await viem.deployContract("MockERC20", ["MNEE", "MNEE"]);
-    treasury = await viem.deployContract("Treasury", [10n]);
+    treasury = await viem.deployContract("ActionsContract", [10n]);
 
     // Mint balances
     await token.write.mint([deployer.account.address, AMOUNT]);

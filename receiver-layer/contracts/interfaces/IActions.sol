@@ -64,7 +64,7 @@ struct ActionStorage {
     // Mapping of (ction ID => Action)
     mapping(bytes32 => Action) actions;
     // Mapping of the aamount of times a STREAM action has been executed
-    mapping(bytes32 => uint8) cliffsPaid;
+    mapping(bytes32 => uint256) cliffsPaid;
     // Mapping of the (token address => amount) of tokens locked in active streams
     mapping(address => uint256) lockedBalances;
 }
@@ -82,7 +82,7 @@ interface IAction {
 
     function lockedBalance(address token) external view returns (uint256);
 
-    function cliffsPaid(bytes32 actionId) external view returns (uint8);
+    function cliffsPaid(bytes32 actionId) external view returns (uint256);
 
     function makePayout(
         address token,

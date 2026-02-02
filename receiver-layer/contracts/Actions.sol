@@ -206,7 +206,7 @@ contract ActionsContract is IAction, Ownable, AccessControl {
 
         state.lockedBalances[token] -= amount;
         if (state.actions[id].record.actionType == ActionType.STREAM_START) {
-            state.cliffsPaid[id] += 1;
+            state.cliffsPaid[id] += amount;
         }
         
         emit PayoutCompleted(id, recipient, amount);
@@ -234,7 +234,7 @@ contract ActionsContract is IAction, Ownable, AccessControl {
         return state.actions[actionId];
     }
 
-    function cliffsPaid(bytes32 actionId) public view returns (uint8) {
+    function cliffsPaid(bytes32 actionId) public view returns (uint256) {
         return state.cliffsPaid[actionId];
     }
 

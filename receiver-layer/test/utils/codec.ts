@@ -40,8 +40,8 @@ export const encodeStreamStartData = (recipient: `0x${string}`, amount: bigint, 
         [
             { type: "address" },
             { type: "uint256" },
-            { type: "uint64" },
-            { type: "uint64" }
+            { type: "uint256" },
+            { type: "uint256" }
         ],
         [recipient, amount, startTime, cliff]
     )

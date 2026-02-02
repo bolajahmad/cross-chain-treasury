@@ -37,27 +37,31 @@ contract StreamExecutor {
         (
             address _recipient,
             uint256 _amount,
-            uint64 _startTime,
-            uint64 _cliff
-        ) = abi.decode(_a.record.data, (address, uint256, uint64, uint64));
+            uint256 _startTime,
+            uint256 _cliff
+        ) = abi.decode(_a.record.data, (address, uint256, uint256, uint256));
 
-        uint8 paid = _t.cliffsPaid(_id);
-        uint256 unlocked = (block.timestamp - _startTime) / _cliff;
+        // Do time assertions
+        require(_cliff != 0, "Invalid Cliff");
+        require(block.timestamp >= _startTime, "Stream Not Ready");
+
+        uint256 paid = _t.cliffsPaid(_id);
+        uint256 perCliff = _amount / MAX_CLIFFS;
+        uint256 unlocked;
+        if (block.timestamp < _startTime + _cliff) {
+            unlocked = 1;
+        } else {
+            unlocked = ((block.timestamp - _startTime) / _cliff) + 1;
+        }
         if (unlocked > MAX_CLIFFS) {
             unlocked = uint256(MAX_CLIFFS);
         }
         // Ensure deadline has passed
-        if (
-            _cliff <= 0 ||
-            block.timestamp < _startTime ||
-            paid > MAX_CLIFFS ||
-            unlocked <= paid
-        ) {
+        if (paid >= MAX_CLIFFS * perCliff || unlocked * perCliff <= paid) {
             revert InvalidStreamParameters();
         }
 
-        uint256 perCliff = _amount / MAX_CLIFFS;
-        uint256 toPay = (unlocked - paid) * perCliff;
+        uint256 toPay = (unlocked * perCliff) - paid;
         if (_t.lockedBalance(_a.token) < toPay) {
             revert InsufficientFunds();
         }
@@ -80,9 +84,14 @@ contract StreamExecutor {
                 stream.record.actionType == ActionType.STREAM_START,
             "Invalid Stream Action"
         );
+        // decode the underlying stream start action
+        (, uint256 _amount, , ) = abi.decode(
+            stream.record.data,
+            (address, uint256, uint64, uint64)
+        );
+        uint256 paid = _t.cliffsPaid(targetId);
         if (stream.record.status == ActionStatus.EXECUTED) {
-            uint8 count = _t.cliffsPaid(targetId);
-            require(count < MAX_CLIFFS, "Stream already completed");
+            require(paid < MAX_CLIFFS * _amount, "Stream already completed");
         } else {
             require(
                 stream.record.status != ActionStatus.STOPPED,
@@ -90,14 +99,7 @@ contract StreamExecutor {
             );
         }
 
-        // decode the underlying stream start action
-        (, uint256 _amount, , ) = abi.decode(
-            stream.record.data,
-            (address, uint256, uint64, uint64)
-        );
-        uint8 paid = _t.cliffsPaid(targetId);
-        uint256 perCliff = _amount / uint256(MAX_CLIFFS);
-        uint256 refund = _amount - (perCliff * paid);
+        uint256 refund = _amount - paid;
 
         if (_t.lockedBalance(stream.token) < refund) {
             revert InsufficientFunds();
@@ -141,11 +143,7 @@ contract StreamExecutor {
             "Can only resume paused streams"
         );
 
-        if (_t.cliffsPaid(targetId) > 0) {
-            _t.updateStatus(targetId, ActionStatus.EXECUTED);
-        } else {
-            _t.updateStatus(targetId, ActionStatus.PENDING);
-        }
+        _t.updateStatus(targetId, ActionStatus.PENDING);
 
         _t.finalizeAction(_id);
     }
