@@ -20,8 +20,10 @@ import { fetchIpfsJson } from "@/lib/queries/fetch-ipfs-data";
 import { hexToString } from "viem";
 import { useEffect, useState } from "react";
 import { useWriteContract } from "wagmi";
-import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
-import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
+import { ACTIONS_CONTRACT_ADDRESS } from "@/lib/contracts";
+import { ActionsContractABI } from "@/lib/contracts/abis/actions-contract-abi";
+import { useQuery } from "@tanstack/react-query";
+import { TContractData } from "@/lib/models/contracts";
 
 interface Props {
   proposal: IAction;
@@ -30,17 +32,22 @@ interface Props {
   userHasVoted?: boolean;
 }
 
-export function ProposalCard({
-  proposal,
-  onViewDetails,
-}: Props) {
+export function ProposalCard({ proposal, onViewDetails }: Props) {
+  const { data: contractsInfo } = useQuery({
+    queryKey: ["contract-information"],
+    queryFn: () =>
+      fetch("/api/contracts").then(
+        (res) => res.json() as Promise<TContractData[]>,
+      ),
+  });
+  const actionContract = contractsInfo?.find(({ id }) => id == "actions");
   const { mutate: writeExecute, isPending } = useWriteContract({
     mutation: {
       onError: (error) => console.log({ error }),
-      onSuccess: (data) => console.log({ data })
-    }
+      onSuccess: (data) => console.log({ data }),
+    },
   });
-  const [actionInfo, setActionInfo] = useState<any>(null);
+  const [actionInfo, setActionInfo] = useState<unknown>(null);
   const isActive = proposal.status === ActionStatus.PENDING;
   const timeRemaining = 200;
 
@@ -118,13 +125,14 @@ export function ProposalCard({
   }, [proposal.actionType.id, proposal.params]);
 
   const executeAction = () => {
-    writeExecute({
-      address: TREASURY_CONTRACT_ADDRESS,
-      abi: TreasuryContractABI,
-      functionName: "executeTreasuryAction",
-      args: [proposal.actionId],
-    });
-  }
+    if (actionContract)
+      writeExecute({
+        address: actionContract.address,
+        abi: JSON.parse(actionContract?.abi),
+        functionName: "executeAction",
+        args: [proposal.actionId],
+      });
+  };
 
   return (
     <Card className="bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-gray-800 hover:shadow-lg hover:border-primary/50 transition-all duration-200 group">
@@ -174,7 +182,7 @@ export function ProposalCard({
           <Button
             size="sm"
             onClick={() => executeAction()}
-            disabled={isPending}
+            disabled={isPending || !actionContract}
             className="flex-1"
           >
             <Vote className="w-4 h-4" />

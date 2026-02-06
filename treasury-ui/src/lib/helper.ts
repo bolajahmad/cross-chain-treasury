@@ -1,5 +1,6 @@
 import { sha256 } from "js-sha256";
 import { MetadataHash } from "./hooks/use-execute-treasury-action";
+import { type WriteContractErrorType } from "viem";
 
 export const shortenAddress = (address?: string): string => {
   if (!address) {
@@ -18,3 +19,9 @@ export const hash256Message = async (message: string) => {
   hasher.update(message);
   return hasher.hex();
 };
+
+export const handleContractError = (error: any) => {
+  const message = error?.cause?.message || error.message || "An unknown error occurred";
+  console.error("Contract Error:", message);
+  return message;
+}

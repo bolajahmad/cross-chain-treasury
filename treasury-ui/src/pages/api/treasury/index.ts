@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
-import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
+import { ACTIONS_CONTRACT_ADDRESS } from "@/lib/contracts";
+import { ActionsContractABI } from "@/lib/contracts/abis/actions-contract-abi";
 import { ProposalTypes } from "@/lib/models/actions";
 import { PaginatedResponse } from "@/lib/models/api";
 import { passetHub } from "@/lib/wallet/wagmi-config";
@@ -12,18 +12,18 @@ type Data = PaginatedResponse<any>;
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<Data>,
 ) {
   const query = req.query as { page?: string; limit?: string; query?: string };
-  
+
   // setup the smart contract of the treasury using viem
   const publicClient = createPublicClient({
     chain: baseSepolia,
     transport: http("https://base-sepolia.gateway.tenderly.co"),
   });
   const contract = getContract({
-    address: TREASURY_CONTRACT_ADDRESS,
-    abi: TreasuryContractABI,
+    address: ACTIONS_CONTRACT_ADDRESS,
+    abi: ActionsContractABI,
     client: { public: publicClient },
   });
 
@@ -40,19 +40,19 @@ export default async function handler(
       meta: {
         total: Number(actionCount),
         hasNext: false,
-        pages: totalPages
-      } 
-     });
+        pages: totalPages,
+      },
+    });
   }
 
   const actions = [];
 
-  res.status(200).json({ 
+  res.status(200).json({
     data: [],
     meta: {
       total: Number(actionCount),
       hasNext: page < totalPages,
-      pages: totalPages
-    }
-   });
+      pages: totalPages,
+    },
+  });
 }

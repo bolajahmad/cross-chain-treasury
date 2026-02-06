@@ -137,25 +137,12 @@ export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Pr
             name="token"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Proposal Preferred Token</FormLabel>
-
-                <Select
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose preferred token" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {["MNEE", "DOT"].map((token) => (
-                      <SelectItem key={token} value={token}>
-                        {token}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormLabel>
+                  Proposal Preferred Token
+                </FormLabel>
+                <FormControl>
+                  <Input type="text" required placeholder="Choose preferred token" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

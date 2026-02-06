@@ -1,4 +1,4 @@
-export const TreasuryContractABI = [
+export const ActionsContractABI = [
   {
     inputs: [
       {
@@ -32,6 +32,16 @@ export const TreasuryContractABI = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "InsufficientFunds",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidAction",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -51,6 +61,11 @@ export const TreasuryContractABI = [
       },
     ],
     name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "UnauthorizedExecutor",
     type: "error",
   },
   {
@@ -83,6 +98,19 @@ export const TreasuryContractABI = [
     inputs: [
       {
         indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
+    ],
+    name: "ActionFinalized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "address",
         name: "previousOwner",
         type: "address",
@@ -95,6 +123,31 @@ export const TreasuryContractABI = [
       },
     ],
     name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "PayoutCompleted",
     type: "event",
   },
   {
@@ -219,7 +272,97 @@ export const TreasuryContractABI = [
   },
   {
     inputs: [],
+    name: "EXECUTOR_ROLE",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "actionId",
+        type: "bytes32",
+      },
+    ],
+    name: "action",
+    outputs: [
+      {
+        components: [
+          {
+            components: [
+              {
+                internalType: "enum ActionStatus",
+                name: "status",
+                type: "uint8",
+              },
+              {
+                internalType: "enum ActionType",
+                name: "actionType",
+                type: "uint8",
+              },
+              {
+                internalType: "address",
+                name: "creator",
+                type: "address",
+              },
+              {
+                internalType: "bytes",
+                name: "data",
+                type: "bytes",
+              },
+              {
+                internalType: "uint256",
+                name: "executedAt",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct ActionRecord",
+            name: "record",
+            type: "tuple",
+          },
+          {
+            internalType: "address",
+            name: "token",
+            type: "address",
+          },
+        ],
+        internalType: "struct Action",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "actionCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "actionId",
+        type: "bytes32",
+      },
+    ],
+    name: "cliffsPaid",
     outputs: [
       {
         internalType: "uint256",
@@ -289,7 +432,20 @@ export const TreasuryContractABI = [
         type: "bytes32",
       },
     ],
-    name: "executeTreasuryAction",
+    name: "executeAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_id",
+        type: "bytes32",
+      },
+    ],
+    name: "finalizeAction",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -353,6 +509,53 @@ export const TreasuryContractABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "lockedBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "id",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "makePayout",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -427,6 +630,24 @@ export const TreasuryContractABI = [
   {
     inputs: [
       {
+        internalType: "uint8",
+        name: "_type",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "_executor",
+        type: "address",
+      },
+    ],
+    name: "setExecutor",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4",
         name: "interfaceId",
         type: "bytes4",
@@ -452,6 +673,24 @@ export const TreasuryContractABI = [
       },
     ],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "_id",
+        type: "bytes32",
+      },
+      {
+        internalType: "enum ActionStatus",
+        name: "_status",
+        type: "uint8",
+      },
+    ],
+    name: "updateStatus",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

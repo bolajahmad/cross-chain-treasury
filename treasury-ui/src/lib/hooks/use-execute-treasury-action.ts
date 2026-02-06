@@ -1,9 +1,9 @@
 import { useWriteContract } from "wagmi";
-import { TreasuryContractABI } from "../contracts/abis/treasury-contract-abi";
-import { TREASURY_CONTRACT_ADDRESS } from "../contracts";
+import { ActionsContractABI } from "../contracts/abis/actions-contract-abi";
+import { ACTIONS_CONTRACT_ADDRESS } from "../contracts";
 import { useMutation } from "@tanstack/react-query";
 import { ProposalType, ProposalTypes } from "../models/actions";
-import { hash256Message } from "../helper";
+import { handleContractError, hash256Message } from "../helper";
 import {
   encodeBatchPayoutActionParameters,
   encodePayoutActionParameters,
@@ -12,6 +12,7 @@ import {
 import { encodeAbiParameters, stringToHex } from "viem";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { toast } from "sonner";
 
 type PayoutParams = {
   recipient: `0x${string}`;
@@ -41,7 +42,17 @@ export type MetadataHash = {
 
 export function useCreateTreasuryActions() {
   const [isSubmitting, setSubmitting] = useState(false);
-  const { mutateAsync, isError, isSuccess, reset } = useWriteContract();
+  const { mutate, isError, isSuccess, reset } = useWriteContract({
+    mutation: {
+      onSettled: () => setSubmitting(false),
+      onError: (error) => handleContractError(error),
+      onSuccess: (data) => {
+        toast("Event created successfully!", {
+          description: "TX Hash: " + data,
+        });
+      },
+    },
+  });
   const { mutateAsync: uploadMetadata } = useMutation({
     mutationKey: ["upload-metadata-hash"],
     mutationFn: (data: MetadataHash) =>
@@ -58,32 +69,32 @@ export function useCreateTreasuryActions() {
 
   const createPayoutAction = async (
     metadata: MetadataHash,
-    params: PayoutParams
+    params: PayoutParams,
   ) => {
     setSubmitting(true);
-    // push the proposal metadata to IPFS to get the metadataURI
-    const metadataHash = await uploadMetadata(metadata);
-    params["metadata"] = metadataHash.hash;
-    const actionId = await hash256Message(metadataHash.hash);
-    console.log({ actionId });
-    const paramsHash = encodePayoutActionParameters(
-      params.recipient,
-      params.amount,
-      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285", // TODO: should be token address
-      stringToHex(metadataHash.hash)
-    );
-    console.log({ paramsHash });
 
     try {
-      await mutateAsync({
-        abi: TreasuryContractABI,
-        address: TREASURY_CONTRACT_ADDRESS,
+      // push the proposal metadata to IPFS to get the metadataURI
+      const metadataHash = await uploadMetadata(metadata);
+      params["metadata"] = metadataHash.hash;
+      const actionId = await hash256Message(metadataHash.hash);
+      console.log({ actionId });
+      const paramsHash = encodePayoutActionParameters(
+        params.recipient,
+        params.amount,
+        params.token,
+        stringToHex(metadataHash.hash),
+      );
+      console.log({ paramsHash });
+
+      mutate({
+        abi: ActionsContractABI,
+        address: ACTIONS_CONTRACT_ADDRESS,
         functionName: "createAction",
         args: [`0x${actionId}`, 0, paramsHash],
       });
     } catch (error) {
       console.error(error);
-      console.log({ error });
     } finally {
       setSubmitting(false);
     }
@@ -91,7 +102,7 @@ export function useCreateTreasuryActions() {
 
   const createBatchPayoutAction = async (
     metadata: MetadataHash,
-    params: BatchPayoutParams
+    params: BatchPayoutParams,
   ) => {
     // Generate the actionID
     setSubmitting(true);
@@ -103,15 +114,15 @@ export function useCreateTreasuryActions() {
     const paramsHash = encodeBatchPayoutActionParameters(
       params.recipients,
       params.amounts,
-      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285",
-      stringToHex(metadataHash.hash)
+      params.token,
+      stringToHex(metadataHash.hash),
     );
     console.log({ paramsHash });
 
     try {
-      await mutateAsync({
-        abi: TreasuryContractABI,
-        address: TREASURY_CONTRACT_ADDRESS,
+      mutate({
+        abi: ActionsContractABI,
+        address: ACTIONS_CONTRACT_ADDRESS,
         functionName: "createAction",
         args: [`0x${actionId}`, 1, paramsHash],
       });
@@ -125,7 +136,7 @@ export function useCreateTreasuryActions() {
 
   const createStreamStartAction = async (
     metadata: MetadataHash,
-    params: StreamStartParams
+    params: StreamStartParams,
   ) => {
     setSubmitting(true);
     // push the proposal metadata to IPFS to get the metadataURI
@@ -139,15 +150,15 @@ export function useCreateTreasuryActions() {
       BigInt(params.amount),
       BigInt(new Date(params.startTime).getTime()),
       BigInt(params.cliff),
-      "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285",
-      stringToHex(metadataHash.hash)
+      params.token,
+      stringToHex(metadataHash.hash),
     );
     console.log({ paramsHash });
 
     try {
-      await mutateAsync({
-        abi: TreasuryContractABI,
-        address: TREASURY_CONTRACT_ADDRESS,
+      mutate({
+        abi: ActionsContractABI,
+        address: ACTIONS_CONTRACT_ADDRESS,
         functionName: "createAction",
         args: [`0x${actionId}`, 2, paramsHash],
       });
@@ -162,7 +173,7 @@ export function useCreateTreasuryActions() {
   const createStreamPauseResumeStopAction = async (
     metadata: MetadataHash,
     id: `0x${string}`,
-    actionType: ProposalType
+    actionType: ProposalType,
   ) => {
     setSubmitting(true);
     // push the proposal metadata to IPFS to get the metadataURI
@@ -182,14 +193,14 @@ export function useCreateTreasuryActions() {
         {
           actionId: id,
         },
-      ]
+      ],
     );
 
     const index = ProposalTypes.findIndex((p) => p.id === actionType);
     try {
-      await mutateAsync({
-        abi: TreasuryContractABI,
-        address: TREASURY_CONTRACT_ADDRESS,
+      mutate({
+        abi: ActionsContractABI,
+        address: ACTIONS_CONTRACT_ADDRESS,
         functionName: "createAction",
         args: [`0x${actionId}`, index, paramsHash],
       });

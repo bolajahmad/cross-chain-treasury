@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { TREASURY_CONTRACT_ADDRESS } from "@/lib/contracts";
-import { TreasuryContractABI } from "@/lib/contracts/abis/treasury-contract-abi";
+import { ACTIONS_CONTRACT_ADDRESS } from "@/lib/contracts";
+import { ActionsContractABI } from "@/lib/contracts/abis/actions-contract-abi";
 import { ProposalTypes } from "@/lib/models/actions";
 import { PaginatedResponse } from "@/lib/models/api";
 import type { NextApiRequest, NextApiResponse } from "next";
