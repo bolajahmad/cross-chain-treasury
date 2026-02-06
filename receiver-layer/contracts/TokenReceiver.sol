@@ -11,11 +11,8 @@ import "hardhat/console.sol";
 
 contract TokenReceiver is HyperApp, ReentrancyGuard {
     /* Immutable variables */
-    // The deployed MNEE stablecoin on testnet
-    IERC20 public immutable mnee;
     IERC20 public immutable feeToken; // Hyperbridge fee token for the chain
-
-    address private immutable _host;
+    address private immutable _host; // The Hyperbridge host contract address
 
     enum EscrowStatus {
         LOCKED, // funds locked, still awaiting execution
@@ -28,11 +25,16 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         address depositor; // The action creator, will get the refund if any
         uint256 amount; // The amount sent to the contract, precedes the encoded value
         uint256 released; // Amount already released to recipient, if stream action
+        address token; // The token address, for future multi-token support
         EscrowStatus status;
     }
 
-    // Map the action bytes to the escrow, acoids decoding here
+    // Map the keccak256 of action bytes to the escrow, avoids decoding here
     mapping(bytes32 => Escrow) public escrows;
+    // Mapping of (token address => amount) of tokens locked in active streams
+    mapping(address => uint256) public lockedBalances;
+    // Mapping of sent messages to keep track till finalization, maps commitmentId => keccak256(actionId)
+    mapping(bytes32 => bytes32) public sentMessages;
     // TODO: should ideally be a byte,
     // Using uint256 assumes this will only work for EVM chain
     uint256 public network = 84532;
@@ -53,11 +55,16 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         address indexed depositor,
         uint256 amount
     );
+    event Log(string func, uint256 gas);
 
-    constructor(address _mnee, address _fee, address _h) {
-        mnee = IERC20(_mnee);
+    /**
+     * Initializes a new TokenReceiver contract
+     * This also triggers the approval of fee token to the host contract
+     * @param _fee the fee token address
+     * @param _h The host contract address for hyperbridge
+     */
+    constructor(address _fee, address _h) {
         feeToken = IERC20(_fee);
-        console.log("Fee token address:", _fee);
         _host = _h;
         IERC20(_fee).approve(_host, type(uint256).max);
     }
@@ -66,6 +73,10 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         return _host;
     }
 
+    /**
+     * Called whenever a Hyperbridge message is received
+     * @param incoming The incoming post request containing the message
+     */
     function onAccept(
         IncomingPostRequest calldata incoming
     ) external override nonReentrant onlyHost {
@@ -104,28 +115,33 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
                 escrow.status = EscrowStatus.PARTIAL;
             }
 
-            mnee.transfer(recipient, amount);
+            IERC20(escrow.token).transfer(recipient, amount);
             emit FundsReleased(action, recipient, amount);
         }
     }
 
     /**
-     * @notice Deposit MNEE tokens to be bridged to destination
-     * @param receiverAccount The destination account (the H160 format)
-     * @param amount The amount of MNEE deposit paid
+     * @notice Deposit specified tokens to be bridged to destination
+     * @param actionType specifies the type of action to execute, defined by the Actions contract
+     * @param action ABI-encoded information about the action to create
+     * @param toContract The destination ActionController contract
+     * @param amount The amount of tokens deposit paid
+     * @param token The address of the ERC20 token to lock
+     * @param fee Hyperbridge expected fee to deliver the message
      */
     function deposit(
-        address receiverAccount,
-        uint256 amount,
         uint8 actionType,
         bytes calldata action,
+        address toContract,
+        uint256 amount,
+        address token,
         uint256 fee
-    ) external nonReentrant {
+    ) external payable nonReentrant {
         // Some amount must be passed
-        require(amount > 0, "Amount is zero");
+        require(amount > 0 || msg.value > 0, "Amount is zero");
         // Escrow the deposited tokens on source chain
         require(
-            mnee.transferFrom(msg.sender, address(this), amount),
+            IERC20(token).transferFrom(msg.sender, address(this), amount),
             "transfer failed"
         );
         // User pays the contract the fee
@@ -140,10 +156,10 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
         DispatchPost memory post = DispatchPost({
             body: body,
             dest: StateMachine.evm(network),
-            timeout: uint64(block.timestamp + 1 hours),
-            to: abi.encodePacked(receiverAccount),
+            timeout: uint64(0), // No timeout
+            to: abi.encodePacked(toContract),
             fee: fee, // e.g., 0.1% fee
-            payer: address(this) // this should pay and be the origin
+            payer: address(msg.sender) // `this` will pay but msg.sender will get potential refunds
         });
 
         // call bridge messenger to send ISMP message
@@ -153,8 +169,11 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
                 depositor: msg.sender,
                 amount: amount,
                 released: 0,
+                token: token,
                 status: EscrowStatus.LOCKED
             });
+            lockedBalances[token] += amount;
+            sentMessages[commitment] = keccak256(action);
 
             emit DepositIntent(msg.sender, action, body, commitment);
         } catch Error(string memory reason) {
@@ -181,7 +200,7 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
         escrow.status = EscrowStatus.REFUNDED;
 
-        require(mnee.transfer(escrow.depositor, remaining), "Refund failed");
+        require(IERC20(escrow.token).transfer(escrow.depositor, remaining), "Refund failed");
 
         emit Refunded(action, escrow.depositor, remaining);
     }
@@ -192,5 +211,17 @@ contract TokenReceiver is HyperApp, ReentrancyGuard {
 
     function currentNetwork() external view returns (bytes memory) {
         return StateMachine.evm(network);
+    }
+
+    fallback() external payable {
+        // send / transfer (forwards 2300 gas to this fallback function)
+        // call (forwards all of the gas)
+        lockedBalances[address(0)] += msg.value;
+        emit Log("fallback", gasleft());
+    }
+
+    receive() external payable {
+        lockedBalances[address(0)] += msg.value;
+        emit Log("receive", gasleft());
     }
 }

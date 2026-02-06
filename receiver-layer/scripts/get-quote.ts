@@ -4,7 +4,7 @@ import {
   encodeBatchPayoutData,
   encodeStreamStartData,
 } from "../test/utils/codec.js";
-import { parseUnits } from "viem";
+import { parseUnits, zeroAddress } from "viem";
 
 const { viem } = await network.connect({
   network: "hardhatOp",
@@ -36,14 +36,14 @@ await publicClient.waitForTransactionReceipt({ hash: tx });
 
 console.log("Transaction sent successfully");
 
-let data = encodeStreamStartData(
-  "0x215BA01637F2Bbf91Fcf5Fb4Df6D41bC64820D65",
-  parseUnits("75", 18),
-  BigInt(Math.floor(Date.now() / 1000) + 3 * 60), // Start time, 3 minutes from now
-  BigInt(5 * 60), // cliff duration, 5 minutes
+let data = encodeBatchPayoutData(
+  ["0x215BA01637F2Bbf91Fcf5Fb4Df6D41bC64820D65"],
+  [parseUnits("75", 18)],
+  zeroAddress, // Start time, 3 minutes from now
+  "0x8768488400", // cliff duration, 5 minutes
 );
-console.log({
-  startTime: BigInt(Math.floor(Date.now() / 1000) + 3 * 60),
-  cliff: BigInt(5 * 60)
-});
+// console.log({
+//   startTime: BigInt(Math.floor(Date.now() / 1000) + 3 * 60),
+//   cliff: BigInt(5 * 60)
+// });
 console.log({ data });

@@ -16,6 +16,8 @@ pub enum TreasuryAction {
     SweepToStrategy { strategy_id: u32, amount: Balance },
     Rebalance { allocations: Vec<(u32, Balance)> },
 
+    ExecuteCode { code: Vec<u8> },
+
     SetBudget { amount: Balance },
     Pause,
     Resume,
@@ -25,10 +27,12 @@ pub enum TreasuryAction {
  */
 /* Treasury actions are defined using an actionID and the SCALE-encoded data */
 // Actions are listed below
-// PAYOUT = 0x01 (Payout to a specified address) (address,uint256,uint32)
-// BATCH_PAYOUT = 0x02 (Batch payout to multiple addresses) (address,uint256,uint32)[]
-// STREAM_START = 0x03 (Start a stream to a specified address) (address,uint256,uint64,uint32)
-// STREAM_STOP = 0x04 (Stop a stream to a specified address) (address, uint32)
+// PAYOUT = 0x00 (Payout to a specified address) (address,uint256,address,bytes)
+// BATCH_PAYOUT = 0x01 (Batch payout to multiple addresses) (address[],uint256[],address,bytes)
+// STREAM_START = 0x02 (Start a stream to a specified address) (address,uint256,uint64,uint32)
+// STREAM_STOP = 0x03 (Stop a stream to a specified address) (address, uint32)
+// PAUSE = 0x04 
+// RESUME = 0x05
 
 enum ActionType {
     PAYOUT,

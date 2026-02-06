@@ -7,10 +7,13 @@ import "@hyperbridge/core/contracts/libraries/StateMachine.sol";
 import "@hyperbridge/core/contracts/interfaces/IDispatcher.sol";
 import "./interfaces/IActions.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract TreasuryController is HyperApp, Ownable {
+contract ActionsController is HyperApp, Ownable {
     // IIsmpHost Address
     address private _host;
+
+    IERC20 public immutable feeToken; // Hyperbridge fee token for the chain
 
     bytes public SOURCE_CHAIN;
     bytes public SOURCE_APP; // Token receiver on source chain
@@ -28,12 +31,16 @@ contract TreasuryController is HyperApp, Ownable {
         address ismpHost,
         address treasuryAddress,
         uint256 sourceChainId,
-        bytes memory sourceApp
+        bytes memory sourceApp,
+        address _fee
     ) Ownable(msg.sender) {
         _host = ismpHost;
         treasury = IAction(treasuryAddress);
         SOURCE_CHAIN = StateMachine.evm(sourceChainId);
         SOURCE_APP = sourceApp;
+        feeToken = IERC20(_fee);
+        
+        IERC20(_fee).approve(_host, type(uint256).max);
     }
 
     function host() public view override returns (address) {
@@ -58,7 +65,7 @@ contract TreasuryController is HyperApp, Ownable {
         );
         // ActionType must be valid
         require(_actionType <= treasury.maxActions(), "Invalid action type");
-        (, uint256 value, , bytes memory _metadata) = abi.decode(
+        (,uint256 value,,bytes memory _metadata) = abi.decode(
             _action,
             (address, uint256, address, bytes)
         );
