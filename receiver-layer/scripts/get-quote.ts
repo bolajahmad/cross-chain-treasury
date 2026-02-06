@@ -42,8 +42,5 @@ let data = encodeBatchPayoutData(
   zeroAddress, // Start time, 3 minutes from now
   "0x8768488400", // cliff duration, 5 minutes
 );
-// console.log({
-//   startTime: BigInt(Math.floor(Date.now() / 1000) + 3 * 60),
-//   cliff: BigInt(5 * 60)
-// });
+
 console.log({ data });
