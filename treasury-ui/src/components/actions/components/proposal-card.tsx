@@ -9,7 +9,7 @@ import {
   ActionStatus,
   Byte,
   IAction,
-  ProposalType,
+  ActionType,
 } from "@/lib/models/actions";
 import {
   decodeBatchPayoutActionParameters,
@@ -65,7 +65,7 @@ export function ProposalCard({ proposal, onViewDetails }: Props) {
 
     const getActionInfo = async () => {
       switch (proposal.actionType.id) {
-        case ProposalType.PAYOUT: {
+        case ActionType.PAYOUT: {
           const { metadata, amount, recipient, token } =
             decodePayoutActionParameters(proposal.params);
           // decode metadata
@@ -74,7 +74,7 @@ export function ProposalCard({ proposal, onViewDetails }: Props) {
           if (isMounted) setActionInfo({ amount, recipient, token, info });
           break;
         }
-        case ProposalType.BATCH_PAYOUT: {
+        case ActionType.BATCH_PAYOUT: {
           // handle batch payout decoding
           const data = decodeBatchPayoutActionParameters(proposal.params);
           if (data) {
@@ -90,7 +90,7 @@ export function ProposalCard({ proposal, onViewDetails }: Props) {
 
           break;
         }
-        case ProposalType.STREAM_START: {
+        case ActionType.STREAM_START: {
           // handle stream start decoding
           const data = decodeStreamStartActionParameters(proposal.params);
           if (data) {

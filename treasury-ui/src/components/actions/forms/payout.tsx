@@ -10,7 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Fragment } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { Inputs } from "../../../pages/actions/create";
+import { Inputs } from "../../../pages/create/oldpage";
 import {
   FormControl,
   FormField,
@@ -18,16 +18,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ProposalType } from "@/lib/models/actions";
+import { ActionType } from "@/lib/models/actions";
 import { Plus, X } from "lucide-react";
 
 type Props = {
   form: UseFormReturn<Inputs, any, Inputs>;
-  proposalType: ProposalType;
+  ActionType: ActionType;
   isSubmitting?: boolean
 };
 
-export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Props) => {
+export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Props) => {
   const recipient = useWatch({
     control: form.control,
     name: "recipient",
@@ -48,7 +48,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Pr
     }) || [];
 
   const addRecipientToList = (recipient: string, amount: string) => {
-    if (proposalType !== ProposalType.BATCH_PAYOUT) return;
+    if (ActionType !== ActionType.BATCH_PAYOUT) return;
     if (!!recipient && !!amount) {
       const index = recipients.findIndex((r) => r === recipient);
       if (index >= 0) {
@@ -148,7 +148,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Pr
             )}
           />
         </div>
-        {proposalType == ProposalType.BATCH_PAYOUT && (
+        {ActionType == ActionType.BATCH_PAYOUT && (
           <div>
             <Button
               type="button"
@@ -162,7 +162,7 @@ export const BatchPayoutProposalForm = ({ form, proposalType, isSubmitting }: Pr
         )}
       </div>
 
-      {proposalType == ProposalType.BATCH_PAYOUT && !!recipients.length && (
+      {ActionType == ActionType.BATCH_PAYOUT && !!recipients.length && (
         <ScrollArea className="h-fit max-h-48 w-full rounded-md border mt-6">
           <div>
             <ul className="space-y-2 p-4 text-sm">

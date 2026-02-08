@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { ACTIONS_CONTRACT_ADDRESS } from "@/lib/contracts";
 import { ActionsContractABI } from "@/lib/contracts/abis/actions-contract-abi";
-import { ProposalTypes } from "@/lib/models/actions";
+import { ActionTypes } from "@/lib/models/actions";
 import { PaginatedResponse } from "@/lib/models/api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
@@ -75,7 +75,7 @@ export default async function handler(
       
       return {
         ...act,
-        actionType: ProposalTypes[act.actionType - 1],
+        actionType: ActionTypes[act.actionType - 1],
       };
     })
   );

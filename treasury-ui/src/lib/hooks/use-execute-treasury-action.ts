@@ -2,7 +2,7 @@ import { useWriteContract } from "wagmi";
 import { ActionsContractABI } from "../contracts/abis/actions-contract-abi";
 import { ACTIONS_CONTRACT_ADDRESS } from "../contracts";
 import { useMutation } from "@tanstack/react-query";
-import { ProposalType, ProposalTypes } from "../models/actions";
+import { ActionType, ActionTypes } from "../models/actions";
 import { handleContractError, hash256Message } from "../helper";
 import {
   encodeBatchPayoutActionParameters,
@@ -37,7 +37,7 @@ type StreamStartParams = {
 export type MetadataHash = {
   title: string;
   description: string;
-  type: ProposalType;
+  type: ActionType;
 };
 
 export function useCreateTreasuryActions() {
@@ -173,7 +173,7 @@ export function useCreateTreasuryActions() {
   const createStreamPauseResumeStopAction = async (
     metadata: MetadataHash,
     id: `0x${string}`,
-    actionType: ProposalType,
+    actionType: ActionType,
   ) => {
     setSubmitting(true);
     // push the proposal metadata to IPFS to get the metadataURI
@@ -196,7 +196,7 @@ export function useCreateTreasuryActions() {
       ],
     );
 
-    const index = ProposalTypes.findIndex((p) => p.id === actionType);
+    const index = ActionTypes.findIndex((p) => p.id === actionType);
     try {
       mutate({
         abi: ActionsContractABI,

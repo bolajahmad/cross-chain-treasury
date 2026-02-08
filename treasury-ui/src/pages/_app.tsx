@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import type { AppProps } from "next/app";
 import { Toaster } from "@/components/ui/sonner"
 import { WagmiProvider } from "wagmi";
+import { RootLayout } from "@/components/layout/root-layout";
 
 const queryClient = new QueryClient();
 
@@ -15,11 +16,14 @@ export default function App({ Component, pageProps }: AppProps) {
     <ThemeProvider attribute="class">
       <WagmiProvider config={getConfig()}>
         <QueryClientProvider client={queryClient}>
-          <div className="minh-screen flex flex-col">
+          <RootLayout>
+            <Component {...pageProps} />
+          </RootLayout>
+          {/* <div className="minh-screen flex flex-col">
             <Navbar />
             <Component {...pageProps} />
             <Footer />
-          </div>
+          </div> */}
 
           <Toaster position="top-center" />
         </QueryClientProvider>

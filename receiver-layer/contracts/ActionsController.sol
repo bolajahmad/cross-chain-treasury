@@ -73,6 +73,9 @@ contract ActionsController is HyperApp, Ownable {
         /* ---- Replay protection ---- */
         require(!processed[_action], "Already processed");
         processed[_action] = true;
+        // Comparing the amount depends, 
+        // for example, if the action is a batch payout, the amount in the message is an array of amounts for multiple recipients,
+        // FRegardless of any approach, they must be equal, otherwise, it means the message has been tampered with
         require(_amount == value, "Amount mismatch");
 
         // decode request body

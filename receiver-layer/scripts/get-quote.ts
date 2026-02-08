@@ -37,10 +37,10 @@ await publicClient.waitForTransactionReceipt({ hash: tx });
 console.log("Transaction sent successfully");
 
 let data = encodeBatchPayoutData(
-  ["0x215BA01637F2Bbf91Fcf5Fb4Df6D41bC64820D65"],
-  [parseUnits("75", 18)],
-  zeroAddress, // Start time, 3 minutes from now
-  "0x8768488400", // cliff duration, 5 minutes
+  ["0x215BA01637F2Bbf91Fcf5Fb4Df6D41bC64820D65", "0xc80211D0a75dd550e54Ea8FE6Eb71a70971269b8"],
+  [parseUnits("5", 18), parseUnits("10", 18)],
+  "0x71783985665e28d1bb95ef75c4c6b480ccad4a96b102c5f272cc2a23f2b7c993", // Start time, 3 minutes from now
+  "0xFa0DD45434E310daC6932b92A1B78fFD0Ed19285", // cliff duration, 5 minutes
 );
 
 console.log({ data });

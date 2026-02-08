@@ -17,11 +17,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ProposalType, ProposalTypes } from "@/lib/models/actions";
+import { ActionType, ActionTypes } from "@/lib/models/actions";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
-import { BatchPayoutProposalForm } from "../../../components/actions/forms/payout";
+import { BatchPayoutProposalForm } from "../../components/actions/forms/payout";
 import {
   Form,
   FormControl,
@@ -32,21 +32,21 @@ import {
 } from "@/components/ui/form";
 import { useCreateTreasuryActions } from "@/lib/hooks/use-execute-treasury-action";
 import { parseUnits } from "viem";
-import { StreamStartActionForm } from "../../../components/actions/forms/stream-start-proposal";
-import { SelectExistingStreamAction } from "../../../components/actions/forms/selec-stream-id";
+import { StreamStartActionForm } from "../../components/actions/forms/stream-start-proposal";
+import { SelectExistingStreamAction } from "../../components/actions/forms/selec-stream-id";
 
 export type Inputs = {
   title: string;
   description: string;
 } & (
   | {
-      type: ProposalType.PAYOUT;
+      type: ActionType.PAYOUT;
       recipient: string;
       amount: string;
       token: string;
     }
   | {
-      type: ProposalType.BATCH_PAYOUT;
+      type: ActionType.BATCH_PAYOUT;
       recipient: string;
       amount: string;
       recipients: string[];
@@ -54,7 +54,7 @@ export type Inputs = {
       token: string;
     }
   | {
-      type: ProposalType.STREAM_START;
+      type: ActionType.STREAM_START;
       recipient: string;
       amount: string;
       startTime: string;
@@ -62,7 +62,7 @@ export type Inputs = {
       token: string;
     }
   | {
-      type: ProposalType.STREAM_STOP | ProposalType.PAUSE | ProposalType.RESUME;
+      type: ActionType.STREAM_STOP | ActionType.PAUSE | ActionType.RESUME;
       id: string;
     }
 );
@@ -72,14 +72,14 @@ export default function CreateActionsPage() {
     defaultValues: {
       title: "",
       description: "",
-      type: ProposalType.PAYOUT,
+      type: ActionType.PAYOUT,
       amount: "",
       recipient: "",
       token: "MNEE",
     },
     shouldUnregister: true,
   });
-  const proposalType = useWatch({
+  const ActionType = useWatch({
     control: form.control,
     name: "type",
   });
@@ -94,7 +94,7 @@ export default function CreateActionsPage() {
   const onSubmit = async (values: Inputs) => {
     console.log("Form Values:", values);
     switch (values.type) {
-      case ProposalType.PAYOUT: {
+      case ActionType.PAYOUT: {
         // Create PAYOUT action on smart contract
         await createPayoutAction(
           {
@@ -110,7 +110,7 @@ export default function CreateActionsPage() {
         );
         break;
       }
-      case ProposalType.BATCH_PAYOUT: {
+      case ActionType.BATCH_PAYOUT: {
         await createBatchPayoutAction(
           {
             title: values.title,
@@ -125,7 +125,7 @@ export default function CreateActionsPage() {
         );
         break;
       }
-      case ProposalType.STREAM_START: {
+      case ActionType.STREAM_START: {
         await createStreamStartAction(
           {
             title: values.title,
@@ -142,9 +142,9 @@ export default function CreateActionsPage() {
         );
         break;
       }
-      case ProposalType.STREAM_STOP:
-      case ProposalType.PAUSE:
-      case ProposalType.RESUME: {
+      case ActionType.STREAM_STOP:
+      case ActionType.PAUSE:
+      case ActionType.RESUME: {
         await createStreamPauseResumeStopAction(
           {
             title: values.title,
@@ -152,7 +152,7 @@ export default function CreateActionsPage() {
             type: values.type,
           },
           values.id as `0x${string}`,
-          proposalType
+          ActionType
         );
         break;
       }
@@ -244,7 +244,7 @@ export default function CreateActionsPage() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  {ProposalTypes.map(({ id, label }) => (
+                                  {ActionTypes.map(({ id, label }) => (
                                     <SelectItem key={id} value={id}>
                                       {label}
                                     </SelectItem>
@@ -306,19 +306,19 @@ export default function CreateActionsPage() {
 
                   <div>
                     {/* BATCH_PAYOUT_FORM */}
-                    {!proposalType ||
+                    {!ActionType ||
                       ([
-                        ProposalType.BATCH_PAYOUT,
-                        ProposalType.PAYOUT,
-                      ].includes(proposalType) && (
+                        ActionType.BATCH_PAYOUT,
+                        ActionType.PAYOUT,
+                      ].includes(ActionType) && (
                         <BatchPayoutProposalForm
-                          proposalType={proposalType}
+                          ActionType={ActionType}
                           form={form}
                           isSubmitting={isSubmitting}
                         />
                       ))}
 
-                    {proposalType == ProposalType.STREAM_START && (
+                    {ActionType == ActionType.STREAM_START && (
                       <StreamStartActionForm
                         form={form}
                         isSubmitting={isSubmitting}
@@ -326,10 +326,10 @@ export default function CreateActionsPage() {
                     )}
 
                     {[
-                      ProposalType.STREAM_STOP,
-                      ProposalType.PAUSE,
-                      ProposalType.RESUME,
-                    ].includes(proposalType) && (
+                      ActionType.STREAM_STOP,
+                      ActionType.PAUSE,
+                      ActionType.RESUME,
+                    ].includes(ActionType) && (
                       <SelectExistingStreamAction
                         form={form}
                         isSubmitting={isSubmitting}

@@ -11,7 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Fragment, useEffect, useState } from "react";
 import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
-import { Inputs } from "../../../pages/actions/create";
+import { Inputs } from "../../../pages/create/oldpage";
 import {
   FormControl,
   FormField,
@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ProposalType } from "@/lib/models/actions";
+import { ActionType } from "@/lib/models/actions";
 import { CalendarIcon, Plus, X } from "lucide-react";
 import {
   Popover,

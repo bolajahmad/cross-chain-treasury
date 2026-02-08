@@ -3,7 +3,7 @@ import { ACTIONS_CONTRACT_ADDRESS, ACTIONS_CONTROLLER_CONTRACT_ADDRESS, TOKEN_RE
 import { ActionsContractABI } from "@/lib/contracts/abis/actions-contract-abi";
 import { ActionsControllerABI } from "@/lib/contracts/abis/actions-controller-abi";
 import { TokenReceiverContractABI } from "@/lib/contracts/abis/token-receiver-abi";
-import { ProposalTypes } from "@/lib/models/actions";
+import { ActionTypes } from "@/lib/models/actions";
 import { PaginatedResponse } from "@/lib/models/api";
 import { TContractData } from "@/lib/models/contracts";
 import { passetHub } from "@/lib/wallet/wagmi-config";
