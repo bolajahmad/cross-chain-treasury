@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,11 +24,10 @@ import { Plus, X } from "lucide-react";
 
 type Props = {
   form: UseFormReturn<Inputs, any, Inputs>;
-  ActionType: ActionType;
-  isSubmitting?: boolean
+  actionType: ActionType;
 };
 
-export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Props) => {
+export const BatchPayoutProposalForm = ({ form, actionType }: Props) => {
   const recipient = useWatch({
     control: form.control,
     name: "recipient",
@@ -48,7 +48,7 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
     }) || [];
 
   const addRecipientToList = (recipient: string, amount: string) => {
-    if (ActionType !== ActionType.BATCH_PAYOUT) return;
+    if (actionType !== ActionType.BATCH_PAYOUT) return;
     if (!!recipient && !!amount) {
       const index = recipients.findIndex((r) => r === recipient);
       if (index >= 0) {
@@ -88,7 +88,7 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
 
   return (
     <Fragment>
-      <div>
+      <div className="flex items-end justify-evenly gap-4 w-full mt-6">
         <div className="space-y-2 flex-1 w-full">
           <FormField
             control={form.control}
@@ -99,6 +99,7 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
                   Recipient&apos;s Address{" "}
                   <span className="text-xm text-red-400">*</span>
                 </FormLabel>
+                <FormMessage />
                 <FormControl>
                   <Input
                     required
@@ -106,14 +107,10 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
         </div>
-      </div>
-
-      <div className="flex items-start justify-evenly gap-4 w-full mt-6">
         <div className="space-y-2 flex-1 w-full">
           <FormField
             control={form.control}
@@ -123,32 +120,15 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
                 <FormLabel>
                   Amount to send <span className="text-xm text-red-400">*</span>
                 </FormLabel>
+                <FormMessage />
                 <FormControl>
                   <Input type="number" required placeholder="00" {...field} />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <div className="space-y-2 flex-1 w-full">
-          <FormField
-            control={form.control}
-            name="token"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Proposal Preferred Token
-                </FormLabel>
-                <FormControl>
-                  <Input type="text" required placeholder="Choose preferred token" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        {ActionType == ActionType.BATCH_PAYOUT && (
+        {actionType == ActionType.BATCH_PAYOUT && (
           <div>
             <Button
               type="button"
@@ -162,7 +142,7 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
         )}
       </div>
 
-      {ActionType == ActionType.BATCH_PAYOUT && !!recipients.length && (
+      {actionType == ActionType.BATCH_PAYOUT && !!recipients.length && (
         <ScrollArea className="h-fit max-h-48 w-full rounded-md border mt-6">
           <div>
             <ul className="space-y-2 p-4 text-sm">
@@ -204,15 +184,6 @@ export const BatchPayoutProposalForm = ({ form, ActionType, isSubmitting }: Prop
           </div>
         </ScrollArea>
       )}
-
-      <Button
-        type="submit"
-        size="lg"
-        className="w-full mt-6"
-          disabled={isSubmitting}
-      >
-        {isSubmitting ? "Creating Proposal..." : "Submit Proposal"}
-      </Button>
     </Fragment>
   );
 };

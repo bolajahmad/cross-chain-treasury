@@ -193,3 +193,35 @@ export const DUMMY_ACTIONS: IAction[] = [
     token: "USDC",
   },
 ];
+
+export type CreateActionInput = {
+  title: string;
+  description: string;
+} & (
+  | {
+      type: ActionType.PAYOUT;
+      recipient: string;
+      amount: string;
+      token: string;
+    }
+  | {
+      type: ActionType.BATCH_PAYOUT;
+      recipient: string;
+      amount: string;
+      recipients: string[];
+      amounts: string[];
+      token: string;
+    }
+  | {
+      type: ActionType.STREAM_START;
+      recipient: string;
+      amount: string;
+      startTime: string;
+      cliff: string;
+      token: string;
+    }
+  | {
+      type: ActionType.STREAM_STOP | ActionType.PAUSE | ActionType.RESUME;
+      id: string;
+    }
+);

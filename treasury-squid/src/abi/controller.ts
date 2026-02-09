@@ -3,44 +3,46 @@ import { event, fun, viewFun, indexed, ContractBase } from '@subsquid/evm-abi'
 import type { EventParams as EParams, FunctionArguments, FunctionReturn } from '@subsquid/evm-abi'
 
 export const events = {
-    DepositIntent: event("0x348abbcb17aa44d8b71f300b1d002fb8b3768139512246e41f84528c0e5ca90a", "DepositIntent(address,bytes,bytes,bytes32)", {"from": indexed(p.address), "action": indexed(p.bytes), "body": p.bytes, "commitmentId": p.bytes32}),
-    FundsReleased: event("0x88e5b5e2ee845e7f79ac6ece4ce2f64dd062d4b61938eae49a0c2c47a224ea73", "FundsReleased(bytes,address,uint256)", {"action": indexed(p.bytes), "recipient": indexed(p.address), "amount": p.uint256}),
-    Log: event("0xdd970dd9b5bfe707922155b058a407655cb18288b807e2216442bca8ad83d6b5", "Log(string,uint256)", {"func": p.string, "gas": p.uint256}),
-    Refunded: event("0x6c9494ede298a51901601c909d8bf308490d2c7f31de3b8c6e0d0ce37797ac01", "Refunded(bytes,address,uint256)", {"action": indexed(p.bytes), "depositor": indexed(p.address), "amount": p.uint256}),
+    ActionReceived: event("0xacef58d49a9b7bb06b84c12b76a71fcf5e4a6db3144c4bb33f971e46415f0b09", "ActionReceived(address,bytes32,uint256)", {"recipient": indexed(p.address), "actionId": indexed(p.bytes32), "amount": p.uint256}),
+    OwnershipTransferred: event("0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0", "OwnershipTransferred(address,address)", {"previousOwner": indexed(p.address), "newOwner": indexed(p.address)}),
 }
 
 export const functions = {
-    currentNetwork: viewFun("0x8e947873", "currentNetwork()", {}, p.bytes),
-    deposit: fun("0xa2e87a3d", "deposit(uint8,bytes,address,uint256,address,uint256)", {"actionType": p.uint8, "action": p.bytes, "toContract": p.address, "amount": p.uint256, "token": p.address, "fee": p.uint256}, ),
-    escrows: viewFun("0x2d83549c", "escrows(bytes32)", {"_0": p.bytes32}, {"depositor": p.address, "amount": p.uint256, "released": p.uint256, "token": p.address, "status": p.uint8}),
+    SOURCE_APP: viewFun("0xd6ab9597", "SOURCE_APP()", {}, p.bytes),
+    SOURCE_CHAIN: viewFun("0xa0609ea5", "SOURCE_CHAIN()", {}, p.bytes),
+    changeTreasury: fun("0xb14f2a39", "changeTreasury(address)", {"_treasury": p.address}, ),
     feeToken: viewFun("0x647846a5", "feeToken()", {}, p.address),
     host: viewFun("0xf437bc59", "host()", {}, p.address),
-    lockedBalances: viewFun("0x0483a7f6", "lockedBalances(address)", {"_0": p.address}, p.uint256),
-    network: viewFun("0x6739afca", "network()", {}, p.uint256),
     onAccept: fun("0x0fee32ce", "onAccept(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),address))", {"incoming": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes}), "relayer": p.address})}, ),
     onGetResponse: fun("0x44ab20f8", "onGetResponse((((bytes,bytes,uint64,address,uint64,bytes[],uint64,bytes),(bytes,bytes)[]),address))", {"_0": p.struct({"response": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.address, "timeoutTimestamp": p.uint64, "keys": p.array(p.bytes), "height": p.uint64, "context": p.bytes}), "values": p.array(p.struct({"key": p.bytes, "value": p.bytes}))}), "relayer": p.address})}, ),
     onGetTimeout: fun("0xd0fff366", "onGetTimeout((bytes,bytes,uint64,address,uint64,bytes[],uint64,bytes))", {"_0": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.address, "timeoutTimestamp": p.uint64, "keys": p.array(p.bytes), "height": p.uint64, "context": p.bytes})}, ),
     onPostRequestTimeout: fun("0xbc0dd447", "onPostRequestTimeout((bytes,bytes,uint64,bytes,bytes,uint64,bytes))", {"_0": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes})}, ),
     onPostResponse: fun("0xb2a01bf5", "onPostResponse((((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64),address))", {"_0": p.struct({"response": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes}), "response": p.bytes, "timeoutTimestamp": p.uint64}), "relayer": p.address})}, ),
     onPostResponseTimeout: fun("0x0bc37bab", "onPostResponseTimeout(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64))", {"_0": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes}), "response": p.bytes, "timeoutTimestamp": p.uint64})}, ),
+    owner: viewFun("0x8da5cb5b", "owner()", {}, p.address),
+    processed: viewFun("0xac13e2cf", "processed(bytes)", {"_0": p.bytes}, p.bool),
     'quote((bytes,bytes,bytes,uint64,uint256,address))': viewFun("0x108bc1dd", "quote((bytes,bytes,bytes,uint64,uint256,address))", {"request": p.struct({"dest": p.bytes, "to": p.bytes, "body": p.bytes, "timeout": p.uint64, "fee": p.uint256, "payer": p.address})}, p.uint256),
     'quote((bytes,uint64,bytes[],uint64,uint256,bytes))': viewFun("0xbca96c39", "quote((bytes,uint64,bytes[],uint64,uint256,bytes))", {"request": p.struct({"dest": p.bytes, "height": p.uint64, "keys": p.array(p.bytes), "timeout": p.uint64, "fee": p.uint256, "context": p.bytes})}, p.uint256),
     'quote(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64,uint256,address))': viewFun("0xdd92a316", "quote(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64,uint256,address))", {"response": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes}), "response": p.bytes, "timeout": p.uint64, "fee": p.uint256, "payer": p.address})}, p.uint256),
     'quoteNative((bytes,bytes,bytes,uint64,uint256,address))': viewFun("0x4f3f7c05", "quoteNative((bytes,bytes,bytes,uint64,uint256,address))", {"request": p.struct({"dest": p.bytes, "to": p.bytes, "body": p.bytes, "timeout": p.uint64, "fee": p.uint256, "payer": p.address})}, p.uint256),
     'quoteNative(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64,uint256,address))': viewFun("0x632e235a", "quoteNative(((bytes,bytes,uint64,bytes,bytes,uint64,bytes),bytes,uint64,uint256,address))", {"request": p.struct({"request": p.struct({"source": p.bytes, "dest": p.bytes, "nonce": p.uint64, "from": p.bytes, "to": p.bytes, "timeoutTimestamp": p.uint64, "body": p.bytes}), "response": p.bytes, "timeout": p.uint64, "fee": p.uint256, "payer": p.address})}, p.uint256),
     'quoteNative((bytes,uint64,bytes[],uint64,uint256,bytes))': viewFun("0xd24740fb", "quoteNative((bytes,uint64,bytes[],uint64,uint256,bytes))", {"request": p.struct({"dest": p.bytes, "height": p.uint64, "keys": p.array(p.bytes), "timeout": p.uint64, "fee": p.uint256, "context": p.bytes})}, p.uint256),
-    sentMessages: viewFun("0x82e3702d", "sentMessages(bytes32)", {"_0": p.bytes32}, p.bytes32),
-    updateNetworkId: fun("0x004b06dd", "updateNetworkId(uint256)", {"_network": p.uint256}, ),
+    relayExecutionResult: fun("0xcda77f8f", "relayExecutionResult(bytes)", {"action": p.bytes}, ),
+    renounceOwnership: fun("0x715018a6", "renounceOwnership()", {}, ),
+    transferOwnership: fun("0xf2fde38b", "transferOwnership(address)", {"newOwner": p.address}, ),
+    treasury: viewFun("0x61d027b3", "treasury()", {}, p.address),
+    updateSourceApp: fun("0x1656c6f6", "updateSourceApp(address)", {"_sourceApp": p.address}, ),
+    updateSourceChain: fun("0x764374f2", "updateSourceChain(uint256)", {"_sourceChainId": p.uint256}, ),
 }
 
 export class Contract extends ContractBase {
 
-    currentNetwork() {
-        return this.eth_call(functions.currentNetwork, {})
+    SOURCE_APP() {
+        return this.eth_call(functions.SOURCE_APP, {})
     }
 
-    escrows(_0: EscrowsParams["_0"]) {
-        return this.eth_call(functions.escrows, {_0})
+    SOURCE_CHAIN() {
+        return this.eth_call(functions.SOURCE_CHAIN, {})
     }
 
     feeToken() {
@@ -51,12 +53,12 @@ export class Contract extends ContractBase {
         return this.eth_call(functions.host, {})
     }
 
-    lockedBalances(_0: LockedBalancesParams["_0"]) {
-        return this.eth_call(functions.lockedBalances, {_0})
+    owner() {
+        return this.eth_call(functions.owner, {})
     }
 
-    network() {
-        return this.eth_call(functions.network, {})
+    processed(_0: ProcessedParams["_0"]) {
+        return this.eth_call(functions.processed, {_0})
     }
 
     'quote((bytes,bytes,bytes,uint64,uint256,address))'(request: QuoteParams_0["request"]) {
@@ -83,38 +85,30 @@ export class Contract extends ContractBase {
         return this.eth_call(functions['quoteNative((bytes,uint64,bytes[],uint64,uint256,bytes))'], {request})
     }
 
-    sentMessages(_0: SentMessagesParams["_0"]) {
-        return this.eth_call(functions.sentMessages, {_0})
+    treasury() {
+        return this.eth_call(functions.treasury, {})
     }
 }
 
 /// Event types
-export type DepositIntentEventArgs = EParams<typeof events.DepositIntent>
-export type FundsReleasedEventArgs = EParams<typeof events.FundsReleased>
-export type LogEventArgs = EParams<typeof events.Log>
-export type RefundedEventArgs = EParams<typeof events.Refunded>
+export type ActionReceivedEventArgs = EParams<typeof events.ActionReceived>
+export type OwnershipTransferredEventArgs = EParams<typeof events.OwnershipTransferred>
 
 /// Function types
-export type CurrentNetworkParams = FunctionArguments<typeof functions.currentNetwork>
-export type CurrentNetworkReturn = FunctionReturn<typeof functions.currentNetwork>
+export type SOURCE_APPParams = FunctionArguments<typeof functions.SOURCE_APP>
+export type SOURCE_APPReturn = FunctionReturn<typeof functions.SOURCE_APP>
 
-export type DepositParams = FunctionArguments<typeof functions.deposit>
-export type DepositReturn = FunctionReturn<typeof functions.deposit>
+export type SOURCE_CHAINParams = FunctionArguments<typeof functions.SOURCE_CHAIN>
+export type SOURCE_CHAINReturn = FunctionReturn<typeof functions.SOURCE_CHAIN>
 
-export type EscrowsParams = FunctionArguments<typeof functions.escrows>
-export type EscrowsReturn = FunctionReturn<typeof functions.escrows>
+export type ChangeTreasuryParams = FunctionArguments<typeof functions.changeTreasury>
+export type ChangeTreasuryReturn = FunctionReturn<typeof functions.changeTreasury>
 
 export type FeeTokenParams = FunctionArguments<typeof functions.feeToken>
 export type FeeTokenReturn = FunctionReturn<typeof functions.feeToken>
 
 export type HostParams = FunctionArguments<typeof functions.host>
 export type HostReturn = FunctionReturn<typeof functions.host>
-
-export type LockedBalancesParams = FunctionArguments<typeof functions.lockedBalances>
-export type LockedBalancesReturn = FunctionReturn<typeof functions.lockedBalances>
-
-export type NetworkParams = FunctionArguments<typeof functions.network>
-export type NetworkReturn = FunctionReturn<typeof functions.network>
 
 export type OnAcceptParams = FunctionArguments<typeof functions.onAccept>
 export type OnAcceptReturn = FunctionReturn<typeof functions.onAccept>
@@ -134,6 +128,12 @@ export type OnPostResponseReturn = FunctionReturn<typeof functions.onPostRespons
 export type OnPostResponseTimeoutParams = FunctionArguments<typeof functions.onPostResponseTimeout>
 export type OnPostResponseTimeoutReturn = FunctionReturn<typeof functions.onPostResponseTimeout>
 
+export type OwnerParams = FunctionArguments<typeof functions.owner>
+export type OwnerReturn = FunctionReturn<typeof functions.owner>
+
+export type ProcessedParams = FunctionArguments<typeof functions.processed>
+export type ProcessedReturn = FunctionReturn<typeof functions.processed>
+
 export type QuoteParams_0 = FunctionArguments<typeof functions['quote((bytes,bytes,bytes,uint64,uint256,address))']>
 export type QuoteReturn_0 = FunctionReturn<typeof functions['quote((bytes,bytes,bytes,uint64,uint256,address))']>
 
@@ -152,9 +152,21 @@ export type QuoteNativeReturn_1 = FunctionReturn<typeof functions['quoteNative((
 export type QuoteNativeParams_2 = FunctionArguments<typeof functions['quoteNative((bytes,uint64,bytes[],uint64,uint256,bytes))']>
 export type QuoteNativeReturn_2 = FunctionReturn<typeof functions['quoteNative((bytes,uint64,bytes[],uint64,uint256,bytes))']>
 
-export type SentMessagesParams = FunctionArguments<typeof functions.sentMessages>
-export type SentMessagesReturn = FunctionReturn<typeof functions.sentMessages>
+export type RelayExecutionResultParams = FunctionArguments<typeof functions.relayExecutionResult>
+export type RelayExecutionResultReturn = FunctionReturn<typeof functions.relayExecutionResult>
 
-export type UpdateNetworkIdParams = FunctionArguments<typeof functions.updateNetworkId>
-export type UpdateNetworkIdReturn = FunctionReturn<typeof functions.updateNetworkId>
+export type RenounceOwnershipParams = FunctionArguments<typeof functions.renounceOwnership>
+export type RenounceOwnershipReturn = FunctionReturn<typeof functions.renounceOwnership>
+
+export type TransferOwnershipParams = FunctionArguments<typeof functions.transferOwnership>
+export type TransferOwnershipReturn = FunctionReturn<typeof functions.transferOwnership>
+
+export type TreasuryParams = FunctionArguments<typeof functions.treasury>
+export type TreasuryReturn = FunctionReturn<typeof functions.treasury>
+
+export type UpdateSourceAppParams = FunctionArguments<typeof functions.updateSourceApp>
+export type UpdateSourceAppReturn = FunctionReturn<typeof functions.updateSourceApp>
+
+export type UpdateSourceChainParams = FunctionArguments<typeof functions.updateSourceChain>
+export type UpdateSourceChainReturn = FunctionReturn<typeof functions.updateSourceChain>
 
