@@ -1,2 +1,2 @@
-export * from "./transfer.model"
 export * from "./action.model"
+export * from "./role.model"

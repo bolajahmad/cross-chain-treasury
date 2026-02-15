@@ -10,7 +10,6 @@ import { Store } from "@subsquid/typeorm-store";
 
 import { NetworkConfig } from "./networksConfigs";
 import * as controllerAbi from "./abi/controller";
-import * as receiverAbi from "./abi/receiver";
 import * as actionsAbi from "./abi/actions";
 
 const fields = {
@@ -49,19 +48,15 @@ export function makeProcessor(
         from: config.startAtBlock,
       })
       // See https://docs.sqd.ai/sdk/reference/processors/evm-batch/ for more info on requesting data
-      .addLog(config.chain == "base" ? { 
+      .addLog({ 
         address: [config.contract[0]],
         topic0: [
           actionsAbi.events.ActionCreated.topic,
           actionsAbi.events.TreasuryExecution.topic,
           actionsAbi.events.OwnershipTransferred.topic,
           actionsAbi.events.PayoutCompleted.topic,
-          actionsAbi.events.ActionFinalized.topic
-        ],
-      } : {
-        address: [config.contract[0]],
-        topic0: [
-          receiverAbi.events.DepositIntent.topic,
+          actionsAbi.events.ActionFinalized.topic,
+          actionsAbi.events.RoleGranted.topic
         ],
       })
       .addLog({

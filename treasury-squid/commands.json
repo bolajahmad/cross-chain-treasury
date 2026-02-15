@@ -44,25 +44,14 @@
         "description": "Generate data access classes for an ABI file(s) in the ./abi folder",
         "cmd": ["squid-evm-typegen", "./src/abi", {"glob": "./abi/*.json"}, "--multicall"]
       },
-      "process:eth": {
-        "description": "Load .env and start the ETH squid processor",
+      "process": {
+        "description": "Load .env and start the squid processor",
         "deps": ["build", "migration:apply"],
-        "cmd": ["node", "--require=dotenv/config", "lib/main.js", "eth"]
+        "cmd": ["node", "--require=dotenv/config", "lib/main.js"]
       },
-      "process:base": {
-        "description": "Load .env and start the BSC squid processor",
-        "deps": ["build", "migration:apply"],
-        "cmd": ["node", "--require=dotenv/config", "lib/main.js", "base"]
-      },
-      "process:prod:eth": {
+      "process:prod": {
         "description": "Start the squid processor",
-        "deps": ["migration:apply"],
-        "cmd": ["node", "lib/main.js", "eth"],
-        "hidden": true
-      },
-      "process:prod:bsc": {
-        "description": "Start the squid processor",
-        "cmd": ["node", "lib/main.js", "bsc"],
+        "cmd": ["node", "lib/main.js"],
         "hidden": true
       },
       "serve": {

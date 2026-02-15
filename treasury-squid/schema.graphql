@@ -1,23 +1,22 @@
-type Transfer @entity {
-  id: ID!
-  network: String! @index
-  block: Int! @index
-  timestamp: DateTime! @index
-  from: String! @index
-  to: String! @index
-  value: BigInt!
-  txHash: String! @index
-}
-
 type Action @entity {
   id: ID!
-  network: String! @index
   block: Int! @index
   timestamp: DateTime! @index
+  executedAt: DateTime!
   actionId: String! @index
   actionType: Int!
   params: String!
   value: BigInt!
   status: String!
+  txHash: String! @index
+}
+
+type Role @entity {
+  id: ID!
+  block: Int! @index
+  timestamp: DateTime! @index
+  role: String!
+  account: String!
+  sender: String!
   txHash: String! @index
 }

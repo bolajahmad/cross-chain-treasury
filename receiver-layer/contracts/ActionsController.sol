@@ -22,7 +22,7 @@ contract ActionsController is HyperApp, Ownable {
     mapping(bytes => bool) public processed;
 
     event ActionReceived(
-        address indexed recipient,
+        bytes indexed recipient,
         bytes32 indexed actionId,
         uint256 amount
     );
@@ -83,9 +83,9 @@ contract ActionsController is HyperApp, Ownable {
 
         // make any necessary state changes
         try treasury.createAction(actionId, _actionType, _action) {
-            emit ActionReceived(incoming.relayer, actionId, _amount);
+            emit ActionReceived(incoming.request.source, actionId, _amount);
         } catch {
-            emit ActionReceived(address(this), actionId, 0);
+            emit ActionReceived(bytes(""), actionId, 0);
             revert UnexpectedCall();
         }
     }

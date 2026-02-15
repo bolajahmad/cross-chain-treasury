@@ -7,17 +7,12 @@ deploy:
   addons:
     postgres: 
     rpc:
-      - eth.http
-      - bsc.http
+      - base.http
   processor:
-    - name: eth-processor
+    - name: processor
       cmd:
         - sqd
-        - process:prod:eth
-    - name: bsc-processor
-      cmd:
-        - sqd
-        - process:prod:bsc
+        - process:prod
   api:
     cmd:
       - sqd
